@@ -78,7 +78,7 @@
     <ProjectGuid>{45C3CBA0-E56D-40B2-BE1F-C2E35EAA7EEF}</ProjectGuid>
     <Keyword>Win32Proj</Keyword>
     <RootNamespace>kwavefluidomp</RootNamespace>
-    <WindowsTargetPlatformVersion>10.0.17763.0</WindowsTargetPlatformVersion>
+    <WindowsTargetPlatformVersion>10.0</WindowsTargetPlatformVersion>
   </PropertyGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.Default.props" />
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'" Label="Configuration">
@@ -97,7 +97,7 @@
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Debug|x64'" Label="Configuration">
     <ConfigurationType>Application</ConfigurationType>
     <UseDebugLibraries>true</UseDebugLibraries>
-    <PlatformToolset>Intel C++ Compiler 19.0</PlatformToolset>
+    <PlatformToolset>v143</PlatformToolset>
     <CharacterSet>Unicode</CharacterSet>
     <InterproceduralOptimization>true</InterproceduralOptimization>
     <UseIntelMKL>Parallel</UseIntelMKL>
@@ -105,7 +105,7 @@
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Release|x64'" Label="Configuration">
     <ConfigurationType>Application</ConfigurationType>
     <UseDebugLibraries>false</UseDebugLibraries>
-    <PlatformToolset>Intel C++ Compiler 19.0</PlatformToolset>
+    <PlatformToolset>v143</PlatformToolset>
     <WholeProgramOptimization>true</WholeProgramOptimization>
     <CharacterSet>NotSet</CharacterSet>
     <UseIntelMKL>Parallel</UseIntelMKL>
@@ -164,7 +164,7 @@
       <WarningLevel>Level3</WarningLevel>
       <Optimization>MaxSpeedHighLevel</Optimization>
       <PreprocessorDefinitions>_DEBUG;_CONSOLE;%(PreprocessorDefinitions);__KWAVE_GIT_HASH__="ed04f750aafcf36aa2b3937799d0d18e81adc4ee"</PreprocessorDefinitions>
-      <AdditionalIncludeDirectories>c:\Program Files\HDF_Group\HDF5\1.8.19\include;.</AdditionalIncludeDirectories>
+      <AdditionalIncludeDirectories>$(VCPKG_ROOT)\installed\x64-windows\include;.</AdditionalIncludeDirectories>
       <MultiProcessorCompilation>true</MultiProcessorCompilation>
       <IntrinsicFunctions>true</IntrinsicFunctions>
       <FavorSizeOrSpeed>Speed</FavorSizeOrSpeed>
@@ -179,7 +179,7 @@
     <Link>
       <SubSystem>Console</SubSystem>
       <GenerateDebugInformation>true</GenerateDebugInformation>
-      <AdditionalDependencies>kernel32.lib;user32.lib;gdi32.lib;winspool.lib;comdlg32.lib;advapi32.lib;shell32.lib;ole32.lib;oleaut32.lib;uuid.lib;odbc32.lib;odbccp32.lib;%(AdditionalDependencies);libszip.lib;libzlib.lib;libhdf5.lib;libhdf5_hl.lib</AdditionalDependencies>
+      <AdditionalDependencies>kernel32.lib;user32.lib;gdi32.lib;winspool.lib;comdlg32.lib;advapi32.lib;shell32.lib;ole32.lib;oleaut32.lib;uuid.lib;odbc32.lib;odbccp32.lib;%(AdditionalDependencies);aec.lib;zlib.lib;hdf5.lib;hdf5_hl.lib;fftw3f.lib;fftw3f_omp.lib</AdditionalDependencies>
     </Link>
   </ItemDefinitionGroup>
   <ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">
@@ -208,7 +208,7 @@
       <FunctionLevelLinking>true</FunctionLevelLinking>
       <IntrinsicFunctions>true</IntrinsicFunctions>
       <PreprocessorDefinitions>H5_BUILT_AS_DYNAMIC_LIB;NDEBUG;_CONSOLE;%(PreprocessorDefinitions);__KWAVE_GIT_HASH__="0ba023063e3f29685e1e346f56883378d961f9f1";</PreprocessorDefinitions>
-      <AdditionalIncludeDirectories>C:\Program Files\HDF_Group\HDF5\1.10.6\include;.</AdditionalIncludeDirectories>
+      <AdditionalIncludeDirectories>$(VCPKG_ROOT)\installed\x64-windows\include;.</AdditionalIncludeDirectories>
       <MultiProcessorCompilation>true</MultiProcessorCompilation>
       <FavorSizeOrSpeed>Speed</FavorSizeOrSpeed>
       <EnableEnhancedInstructionSet>AdvancedVectorExtensions</EnableEnhancedInstructionSet>
@@ -243,8 +243,8 @@
       <EnableCOMDATFolding>true</EnableCOMDATFolding>
       <OptimizeReferences>true</OptimizeReferences>
       <GenerateDebugInformation>false</GenerateDebugInformation>
-      <AdditionalLibraryDirectories>c:\Program Files\HDF_Group\HDF5\1.10.6\lib;c:\Program Files\HDF_Group\HDF5\1.10.6\bin;</AdditionalLibraryDirectories>
-      <AdditionalDependencies>%(AdditionalDependencies);hdf5.lib;hdf5_hl.lib;szip.lib;zlib.lib</AdditionalDependencies>
+      <AdditionalLibraryDirectories>$(VCPKG_ROOT)\installed\x64-windows\lib</AdditionalLibraryDirectories>
+      <AdditionalDependencies>%(AdditionalDependencies);aec.lib;zlib.lib;hdf5.lib;hdf5_hl.lib;fftw3f.lib;fftw3f_omp.lib</AdditionalDependencies>
       <InterproceduralOptimization>true</InterproceduralOptimization>
       <IgnoreAllDefaultLibraries>false</IgnoreAllDefaultLibraries>
       <LinkStatus>false</LinkStatus>
