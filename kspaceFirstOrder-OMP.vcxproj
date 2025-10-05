@@ -184,7 +184,7 @@
       <SubSystem>Console</SubSystem>
       <GenerateDebugInformation>true</GenerateDebugInformation>
       <AdditionalLibraryDirectories>$(VCPKG_ROOT)\installed\$(VCPKG_TRIPLET)\lib;$(VCPKG_ROOT)\installed\$(VCPKG_TRIPLET)\lib\manual-link</AdditionalLibraryDirectories>
-      <AdditionalDependencies>kernel32.lib;user32.lib;gdi32.lib;winspool.lib;comdlg32.lib;advapi32.lib;shell32.lib;ole32.lib;oleaut32.lib;uuid.lib;odbc32.lib;odbccp32.lib;%(AdditionalDependencies);aec.lib;zlib.lib;hdf5.lib;hdf5_hl.lib;fftw3f.lib;fftw3f_omp.lib</AdditionalDependencies>
+      <AdditionalDependencies>kernel32.lib;user32.lib;gdi32.lib;winspool.lib;comdlg32.lib;advapi32.lib;shell32.lib;ole32.lib;oleaut32.lib;uuid.lib;odbc32.lib;odbccp32.lib;%(AdditionalDependencies);aec.lib;libaec.lib;szip.lib;zlib.lib;hdf5.lib;hdf5_hl.lib;fftw3f.lib;fftw3f_omp.lib</AdditionalDependencies>
     </Link>
   </ItemDefinitionGroup>
   <ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">
@@ -249,7 +249,7 @@
       <OptimizeReferences>true</OptimizeReferences>
       <GenerateDebugInformation>false</GenerateDebugInformation>
       <AdditionalLibraryDirectories>$(VCPKG_ROOT)\installed\$(VCPKG_TRIPLET)\lib;$(VCPKG_ROOT)\installed\$(VCPKG_TRIPLET)\lib\manual-link</AdditionalLibraryDirectories>
-      <AdditionalDependencies>%(AdditionalDependencies);aec.lib;zlib.lib;hdf5.lib;hdf5_hl.lib;fftw3f.lib;fftw3f_omp.lib</AdditionalDependencies>
+      <AdditionalDependencies>%(AdditionalDependencies);aec.lib;libaec.lib;szip.lib;zlib.lib;hdf5.lib;hdf5_hl.lib;fftw3f.lib;fftw3f_omp.lib</AdditionalDependencies>
       <InterproceduralOptimization>true</InterproceduralOptimization>
       <IgnoreAllDefaultLibraries>false</IgnoreAllDefaultLibraries>
       <LinkStatus>false</LinkStatus>
