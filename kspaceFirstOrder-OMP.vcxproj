@@ -137,7 +137,7 @@
     <LinkIncremental>true</LinkIncremental>
     <!-- Default vcpkg triplet for static linking; override via environment VCPKG_TRIPLET if needed -->
     <VCPKG_TRIPLET Condition="'$(VCPKG_TRIPLET)'==''">x64-windows-static</VCPKG_TRIPLET>
-    <LIBAEC_LIB Condition="'$(LIBAEC_LIB)'==''">libaec.lib</LIBAEC_LIB>
+    <LIBAEC_LIB Condition="'$(LIBAEC_LIB)'==''">aec-static.lib</LIBAEC_LIB>
   </PropertyGroup>
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">
     <LinkIncremental>false</LinkIncremental>
@@ -148,7 +148,7 @@
     <LibraryPath>$(OmpLibDir);$(LibraryPath);</LibraryPath>
     <!-- Default vcpkg triplet for static linking; override via environment VCPKG_TRIPLET if needed -->
     <VCPKG_TRIPLET Condition="'$(VCPKG_TRIPLET)'==''">x64-windows-static</VCPKG_TRIPLET>
-    <LIBAEC_LIB Condition="'$(LIBAEC_LIB)'==''">libaec.lib</LIBAEC_LIB>
+    <LIBAEC_LIB Condition="'$(LIBAEC_LIB)'==''">aec-static.lib</LIBAEC_LIB>
   </PropertyGroup>
   <ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">
     <ClCompile>
