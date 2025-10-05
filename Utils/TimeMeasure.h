@@ -32,11 +32,7 @@
 #ifndef TIME_MEASURE_H
 #define TIME_MEASURE_H
 
-#ifdef _OPENMP
-  #include <omp.h>
-#else
-  #include <sys/time.h>
-#endif
+#include <chrono>
 
 /**
  * @class   TimeMeasure
@@ -65,25 +61,13 @@ class TimeMeasure
     /// Take start timestamp.
     void start()
     {
-      #ifdef _OPENMP
-        mStartTime = omp_get_wtime();
-      #else
-        timeval actTime;
-        gettimeofday(&actTime, nullptr);
-        mStartTime = actTime.tv_sec + actTime.tv_usec * 1.0e-6;
-      #endif
+      mStartTp = std::chrono::steady_clock::now();
     };
 
     /// Take stop timestamp.
     void stop()
     {
-      #ifdef _OPENMP
-        mStopTime = omp_get_wtime();
-      #else
-        timeval actTime;
-        gettimeofday(&actTime, nullptr);
-        mStopTime = actTime.tv_sec + actTime.tv_usec * 1.0e-6;
-      #endif
+      mStopTp = std::chrono::steady_clock::now();
     };
 
     /**
@@ -92,7 +76,7 @@ class TimeMeasure
      */
     double getElapsedTime() const
     {
-      return mStopTime - mStartTime;
+      return std::chrono::duration<double>(mStopTp - mStartTp).count();
     };
 
     /**
@@ -101,7 +85,7 @@ class TimeMeasure
      */
     double getElapsedTimeOverAllLegs() const
     {
-      return mElapsedTimeOverPreviousLegs + (mStopTime - mStartTime);
+      return mElapsedTimeOverPreviousLegs + std::chrono::duration<double>(mStopTp - mStartTp).count();
     };
 
     /**
@@ -124,9 +108,9 @@ class TimeMeasure
 
   private:
     /// Start timestamp of the interval
-    double mStartTime;
+    std::chrono::steady_clock::time_point mStartTp{};
     /// Stop timestamp of the interval
-    double mStopTime;
+    std::chrono::steady_clock::time_point mStopTp{};
     /// Elapsed time in previous simulation legs
     double mElapsedTimeOverPreviousLegs;
 };// end of TimeMeasure
