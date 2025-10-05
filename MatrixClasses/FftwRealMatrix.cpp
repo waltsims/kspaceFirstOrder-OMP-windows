@@ -110,7 +110,7 @@ void FftwRealMatrix::createPlans1DY(RealMatrix& inMatrix)
   fftw_iodim howManyDims[1];
 
   // GNU compiler + FFTW
-  #if (defined(__GNUC__) || defined(__GNUG__)) && !(defined(__clang__) || defined(__INTEL_COMPILER))
+  #if ((defined(__GNUC__) || defined(__GNUG__) || defined(_MSC_VER)) && !(defined(__clang__) || defined(__INTEL_COMPILER)))
 
     dims[0].is = nx;
     dims[0].n  = ny;
@@ -225,10 +225,12 @@ void FftwRealMatrix::computeForwardR2RFft1DY(const TransformKind kind,
                         mData, mDimensionSizes.ny, mDimensionSizes.nx);
     }
   #endif
-  else
-  {
-    throw std::runtime_error(Logger::formatMessage(kErrFmtExecuteR2RFftPlan1D, int(kind)));
-  }
+  #if !(defined(__INTEL_COMPILER))
+    if (!mOutPlaceR2RPlans1DY[kind])
+    {
+      throw std::runtime_error(Logger::formatMessage(kErrFmtExecuteR2RFftPlan1D, int(kind)));
+    }
+  #endif
 }// end of computeForwardR2RFft1DY
 //----------------------------------------------------------------------------------------------------------------------
 
@@ -239,7 +241,7 @@ void FftwRealMatrix::computeInverseR2RFft1DY(const TransformKind kind,
                                              RealMatrix&         outMatrix)
 {
   // GNU compiler + FFTW
-  #if (defined(__GNUC__) || defined(__GNUG__)) && !(defined(__clang__) || defined(__INTEL_COMPILER))
+  #if ((defined(__GNUC__) || defined(__GNUG__) || defined(_MSC_VER)) && !(defined(__clang__) || defined(__INTEL_COMPILER)))
     if (mOutPlaceR2RPlans1DY[kind])
     {
       fftwf_execute_r2r(mOutPlaceR2RPlans1DY[kind], mData, outMatrix.getData());
@@ -267,10 +269,12 @@ void FftwRealMatrix::computeInverseR2RFft1DY(const TransformKind kind,
                                mDimensionSizes.ny, outMatrix.getData(), mDimensionSizes.nx);
     }
   #endif
-  else
-  {
-    throw std::runtime_error(Logger::formatMessage(kErrFmtExecuteR2RFftPlan1D, int(kind)));
-  }
+  #if !(defined(__INTEL_COMPILER))
+    if (!mOutPlaceR2RPlans1DY[kind])
+    {
+      throw std::runtime_error(Logger::formatMessage(kErrFmtExecuteR2RFftPlan1D, int(kind)));
+    }
+  #endif
 }// end of computeInverseR2RFft1DY
 //----------------------------------------------------------------------------------------------------------------------
 

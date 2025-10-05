@@ -329,8 +329,8 @@ void FftwComplexMatrix::createR2CFftPlan1DZ(RealMatrix& inMatrix)
     dims[0].n  = nz;
     dims[0].os = nx * ny;
 
-    // GNU Compiler + FFTW
-    #if (defined(__GNUC__) || defined(__GNUG__)) && !(defined(__clang__) || defined(__INTEL_COMPILER))
+    // GNU/MSVC Compiler + FFTW
+    #if ((defined(__GNUC__) || defined(__GNUG__) || defined(_MSC_VER)) && !(defined(__clang__) || defined(__INTEL_COMPILER)))
       // How FFTs we need to perform - Y * X
       const int  howManyRank = 2;
       fftw_iodim howManyDims[2];
@@ -405,8 +405,8 @@ void FftwComplexMatrix::createC2RFftPlan1DX(RealMatrix& outMatrix)
   // Set dimensions for 3D simulations
   if (Parameters::getInstance().isSimulation3D())
   {
-    // GNU Compiler + FFTW
-    #if (defined(__GNUC__) || defined(__GNUG__)) && !(defined(__clang__) || defined(__INTEL_COMPILER))
+    // GNU/MSVC Compiler + FFTW
+    #if ((defined(__GNUC__) || defined(__GNUG__) || defined(_MSC_VER)) && !(defined(__clang__) || defined(__INTEL_COMPILER)))
       // How FFTs we need to perform - Z * Y
       howManyRank = 2;
 
@@ -484,8 +484,8 @@ void FftwComplexMatrix::createC2RFftPlan1DY(RealMatrix& outMatrix)
   // Set dimensions for 3D simulations
   if (Parameters::getInstance().isSimulation3D())
   {
-    // GNU Compiler + FFTW
-    #if (defined(__GNUC__) || defined(__GNUG__)) && !(defined(__clang__) || defined(__INTEL_COMPILER))
+    // GNU/MSVC Compiler + FFTW
+    #if ((defined(__GNUC__) || defined(__GNUG__) || defined(_MSC_VER)) && !(defined(__clang__) || defined(__INTEL_COMPILER)))
       // How FFTs we need to perform - Z * X
       howManyRank = 2;
 
