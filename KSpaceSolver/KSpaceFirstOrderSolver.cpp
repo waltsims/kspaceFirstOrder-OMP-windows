@@ -2119,7 +2119,7 @@ void KSpaceFirstOrderSolver::sumPressureTermsNonlinearLossless()
 
   float* p = getRealData(MI::kP);
 
-  #pragma omp parallel for simd schedule(simd:static) \
+  #pragma omp parallel for schedule(static) \
           aligned(rhoX, rhoY, rhoZ, c2Matrix, bOnAMatrix, rho0Matrix, p : kDataAlignment)
   for (size_t i = 0; i < nElements; i++)
   {
@@ -2203,7 +2203,7 @@ void KSpaceFirstOrderSolver::sumPressureTermsNonlinearStokes()
 
   float* p = getRealData(MI::kP);
 
-  #pragma omp parallel for simd schedule(simd:static) \
+  #pragma omp parallel for schedule(static) \
           aligned(rhoX, rhoY, rhoZ, duxdx, duydy, duzdz, \
                   c2Matrix, rho0Matrix, bOnAMatrix, absorbTauMatrix, p : kDataAlignment)
   for (size_t i = 0; i < nElements; i++)
@@ -2239,7 +2239,7 @@ void KSpaceFirstOrderSolver::sumPressureTermsLinearLossless()
 
   float* p  = getRealData(MI::kP);
 
-  #pragma omp parallel for simd schedule(simd:static) aligned(rhoX, rhoY, rhoZ, c2Matrix, p : kDataAlignment)
+  #pragma omp parallel for schedule(static) aligned(rhoX, rhoY, rhoZ, c2Matrix, p : kDataAlignment)
   for (size_t i = 0; i < nElements; i++)
   {
     const float c2      = (c0ScalarFlag) ?  c2Scalar : c2Matrix[i];
@@ -2312,7 +2312,7 @@ void KSpaceFirstOrderSolver::sumPressureTermsLinearStokes()
 
   float* p = getRealData(MI::kP);
 
-  #pragma omp parallel for simd schedule(simd:static) \
+  #pragma omp parallel for schedule(static) \
           aligned(rhoX, rhoY, rhoZ, duxdx, duydy, duzdz, c2Matrix, rho0Matrix, absorbTauMatrix, p : kDataAlignment)
   for (size_t i = 0; i < nElements; i++)
   {
@@ -2359,7 +2359,7 @@ void KSpaceFirstOrderSolver::computePressureTermsNonlinearPowerLaw(RealMatrix& d
   float* pNonlinearTerm       = nonlinearTerm.getData();
   float* pVelocityGradientSum = velocityGradientSum.getData();
 
-  #pragma omp parallel for simd schedule(simd:static) \
+  #pragma omp parallel for schedule(static) \
           aligned(rhoX, rhoY, rhoZ, duxdx, duydy, duzdz, bOnAMatrix, rho0Matrix, \
                   pDensitySum, pNonlinearTerm, pVelocityGradientSum : kDataAlignment)
   for (size_t i = 0; i < nElements ; i++)
@@ -2401,13 +2401,13 @@ void KSpaceFirstOrderSolver::computePressureTermsLinearPowerLaw(RealMatrix& dens
   float* pDensitySum          = densitySum.getData();
   float* pVelocityGradientSum = velocityGradientSum.getData();
 
-  #pragma omp parallel for simd schedule(simd:static) aligned(rhoX, rhoY, rhoZ,pDensitySum : kDataAlignment)
+  #pragma omp parallel for schedule(static) aligned(rhoX, rhoY, rhoZ,pDensitySum : kDataAlignment)
   for (size_t i = 0; i < size; i++)
   {
     pDensitySum[i] = (simulationDimension == SD::k3D) ? (rhoX[i] + rhoY[i] + rhoZ[i]) : (rhoX[i] + rhoY[i]);
   }
 
-  #pragma omp parallel for simd schedule(simd:static) \
+  #pragma omp parallel for schedule(static) \
           aligned (duxdx, duydy, duzdz, rho0Matrix, pVelocityGradientSum : kDataAlignment)
   for (size_t i = 0; i < size; i++)
   {
@@ -2433,7 +2433,7 @@ void KSpaceFirstOrderSolver::computePowerLawAbsorbtionTerm(FftwComplexMatrix& ff
   FloatComplex* pFftPart1 = fftPart1.getComplexData();
   FloatComplex* pFftPart2 = fftPart2.getComplexData();
 
-  #pragma omp parallel for simd schedule(simd:static) \
+  #pragma omp parallel for schedule(static) \
           aligned(absorbNabla1, absorbNabla2, pFftPart1, pFftPart2 : kDataAlignment)
   for (size_t i = 0; i < nElements; i++)
   {
@@ -2470,7 +2470,7 @@ void KSpaceFirstOrderSolver::sumPressureTermsNonlinearPowerLaw(const RealMatrix&
 
   float* p = getRealData(MI::kP);
 
-  #pragma omp parallel for simd schedule(simd:static) \
+  #pragma omp parallel for schedule(static) \
           aligned(c2Matrix, absorbTauMatrix, absorbEtaMatrix, pAbsorbTauTerm, pAbsorbEtaTerm, bOnA, p : kDataAlignment)
   for (size_t i = 0; i < nElements; i++)
   {
@@ -2510,7 +2510,7 @@ void KSpaceFirstOrderSolver::sumPressureTermsLinear(const RealMatrix& absorbTauT
 
   float* p = getRealData(MI::kP);
 
-  #pragma omp parallel for simd schedule(simd:static) \
+  #pragma omp parallel for schedule(static) \
           aligned(c2Matrix, absorbTauMatrix, absorbEtaMatrix, \
                   pAbsorbTauTerm, pAbsorbEtaTerm, pDenistySum, p : kDataAlignment)
   for (size_t i = 0; i < nElements; i++)
@@ -2624,7 +2624,7 @@ void KSpaceFirstOrderSolver::addPressureSource()
         }
 
         // Scaling in Fourier space
-        #pragma omp parallel for simd schedule(simd:static)
+        #pragma omp parallel for schedule(static)
         for (size_t i = 0; i < nElementsReduced ; i++)
         {
           pFftMatrix[i] *= divider * pSourceKappa[i];
@@ -2643,7 +2643,7 @@ void KSpaceFirstOrderSolver::addPressureSource()
         }
 
         // Add the source values to the existing field values
-        #pragma omp parallel for simd schedule(simd: static)
+        #pragma omp parallel for schedule(static)
         for (size_t i = 0; i < nElementsFull; i++)
         {
           rhox[i] += pScaledSource[i];
@@ -2814,7 +2814,7 @@ void KSpaceFirstOrderSolver::computeVelocitySourceTerm(RealMatrix&        veloci
         fftMatrix.computeR2CFftND(scaledSource);
       }
 
-      #pragma omp parallel for simd schedule(simd:static)
+      #pragma omp parallel for schedule(static)
       for (size_t i = 0; i < nElementsReduced; i++)
       {
         pFftMatrix[i] *= divider * pSourceKappa[i];
@@ -2841,7 +2841,7 @@ void KSpaceFirstOrderSolver::computeVelocitySourceTerm(RealMatrix&        veloci
       }
 
       // Add the source values to the existing field values
-      #pragma omp parallel for simd schedule(simd:static)
+      #pragma omp parallel for schedule(static)
       for (size_t i = 0; i < nElementsFull; i++)
       {
         pVelocityMatrix[i] += pScaledSource[i];
@@ -2880,7 +2880,7 @@ void KSpaceFirstOrderSolver::addInitialPressureSource()
 
   getRealMatrix(MI::kP).copyData(getRealMatrix(MI::kInitialPressureSourceInput));
 
-  #pragma omp parallel for simd schedule(simd:static)
+  #pragma omp parallel for schedule(static)
   for (size_t i = 0; i < nElements; i++)
   {
     const float tmp = sourceInput[i] / (dimScalingFactor * ((c0ScalarFlag) ? c2Scalar : c2Matrix[i]));
@@ -2937,7 +2937,7 @@ void KSpaceFirstOrderSolver::computeInitialVelocityUniform()
   float* uySgy = getRealData(MI::kUySgy);
 
   // x and y dimensions
-  #pragma omp parallel for simd schedule(simd:static) \
+  #pragma omp parallel for schedule(static) \
           aligned(dtRho0SgxMatrix, dtRho0SgyMatrix, dpdxSgx, dpdySgy, uxSgx, uySgy : kDataAlignment)
   for (size_t i = 0; i < nElements; i++)
   {
@@ -2958,7 +2958,7 @@ void KSpaceFirstOrderSolver::computeInitialVelocityUniform()
 
     float* uzSgz = getRealData(MI::kUzSgz);
 
-    #pragma omp parallel for simd schedule(simd:static) aligned(dtRho0SgzMatrix, dpdzSgz, uzSgz : kDataAlignment)
+    #pragma omp parallel for schedule(static) aligned(dtRho0SgzMatrix, dpdzSgz, uzSgz : kDataAlignment)
     for (size_t i = 0; i < nElements; i++)
     {
       const float dtRho0Sgz = (rho0ScalarFlag) ? dtRho0SgzScalar : 0.5f * dtRho0SgzMatrix[i];
@@ -3738,7 +3738,7 @@ void KSpaceFirstOrderSolver::generateC2()
 
     float* c2 = getRealData(MI::kC2);
 
-    #pragma omp parallel for simd schedule(simd:static) aligned(c2 : kDataAlignment)
+    #pragma omp parallel for schedule(static) aligned(c2 : kDataAlignment)
     for (size_t i = 0; i < nElements; i++)
     {
       c2[i] = c2[i] * c2[i];

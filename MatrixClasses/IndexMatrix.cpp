@@ -159,7 +159,7 @@ DimensionSizes IndexMatrix::getBottomRightCorner(const size_t& index) const
  */
 void IndexMatrix::recomputeIndicesToCPP()
 {
-  #pragma omp parallel for simd schedule(simd:static)
+  #pragma omp parallel for schedule(static)
   for (size_t i = 0; i < mSize; i++)
   {
     mData[i]--;
@@ -172,7 +172,7 @@ void IndexMatrix::recomputeIndicesToCPP()
  */
 void IndexMatrix::recomputeIndicesToMatlab()
 {
-  #pragma omp parallel for simd schedule(simd:static)
+  #pragma omp parallel for schedule(static)
   for (size_t i = 0; i < mSize; i++)
   {
     mData[i]++;

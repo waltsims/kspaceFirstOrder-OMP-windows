@@ -174,7 +174,7 @@ void WholeDomainOutputStream::sample()
 
     case ReduceOperator::kRms:
     {
-      #pragma omp parallel for simd schedule(simd:static)
+      #pragma omp parallel for schedule(static)
       for (size_t i = 0; i < mBufferSize; i++)
       {
         mStoreBuffer[i] += (sourceData[i] * sourceData[i]);
@@ -184,7 +184,7 @@ void WholeDomainOutputStream::sample()
 
     case ReduceOperator::kMax:
     {
-      #pragma omp parallel for simd schedule(simd:static)
+      #pragma omp parallel for schedule(static)
       for (size_t i = 0; i < mBufferSize; i++)
       {
         mStoreBuffer[i] = std::max(mStoreBuffer[i], sourceData[i]);
@@ -194,7 +194,7 @@ void WholeDomainOutputStream::sample()
 
     case ReduceOperator::kMin:
     {
-      #pragma omp parallel for simd schedule(simd:static)
+      #pragma omp parallel for schedule(static)
       for (size_t i = 0; i < mBufferSize; i++)
       {
         mStoreBuffer[i] = std::min(mStoreBuffer[i], sourceData[i]);

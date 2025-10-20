@@ -60,7 +60,7 @@ void BaseFloatMatrix::copyData(const BaseFloatMatrix& src)
 {
   const float* srcData = src.getData();
 
-  #pragma omp parallel for simd schedule(simd:static) firstprivate(srcData)
+  #pragma omp parallel for schedule(static) firstprivate(srcData)
   for (size_t i = 0; i < mCapacity; i++)
   {
     mData[i] = srcData[i];
@@ -73,7 +73,7 @@ void BaseFloatMatrix::copyData(const BaseFloatMatrix& src)
  */
 void BaseFloatMatrix::zeroMatrix()
 {
-  #pragma omp parallel for simd schedule(simd:static)
+  #pragma omp parallel for schedule(static)
   for (size_t i = 0; i < mCapacity; i++)
   {
     mData[i] = 0.0f;
@@ -86,7 +86,7 @@ void BaseFloatMatrix::zeroMatrix()
  */
 void BaseFloatMatrix::scalarDividedBy(const float scalar)
 {
-  #pragma omp parallel for simd schedule(simd:static) firstprivate(scalar)
+  #pragma omp parallel for schedule(static) firstprivate(scalar)
   for (size_t i = 0; i < mCapacity; i++)
   {
     mData[i] = scalar / mData[i];
