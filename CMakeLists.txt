@@ -13,7 +13,7 @@ find_package(OpenMP REQUIRED COMPONENTS CXX)
 
 find_path(KSPACE_FFTW_INCLUDE_DIR
   NAMES fftw3.h
-  PATH_SUFFIXES include include/fftw3 include\fftw3
+  PATH_SUFFIXES include include/fftw3
 )
 
 find_library(KSPACE_FFTW_LIB
