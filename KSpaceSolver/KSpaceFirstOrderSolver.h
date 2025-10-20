@@ -32,6 +32,7 @@
 #ifndef KSPACE_FIRST_ORDER_SOLVER_H
 #define KSPACE_FIRST_ORDER_SOLVER_H
 
+#include <cstddef>
 #include <functional>
 
 #include <Parameters/Parameters.h>
@@ -668,6 +669,13 @@ class KSpaceFirstOrderSolver
      */
     size_t get1DIndex(const size_t          y,
                       const size_t          x,
+                      const DimensionSizes& dimensionSizes) const;
+    size_t get1DIndex(const std::ptrdiff_t  z,
+                      const std::ptrdiff_t  y,
+                      const std::ptrdiff_t  x,
+                      const DimensionSizes& dimensionSizes) const;
+    size_t get1DIndex(const std::ptrdiff_t  y,
+                      const std::ptrdiff_t  x,
                       const DimensionSizes& dimensionSizes) const;
 
     //--------------------------------------- Getters for temporary matrices -----------------------------------------//

@@ -29,6 +29,7 @@
  * If not, see [http://www.gnu.org/licenses/](http://www.gnu.org/licenses/).
  */
 
+#include <cstddef>
 #include <MatrixClasses/IndexMatrix.h>
 #include <Logger/Logger.h>
 
@@ -159,10 +160,12 @@ DimensionSizes IndexMatrix::getBottomRightCorner(const size_t& index) const
  */
 void IndexMatrix::recomputeIndicesToCPP()
 {
-  #pragma omp parallel for schedule(static)
-  for (size_t i = 0; i < mSize; i++)
+  const std::ptrdiff_t sizeSigned = static_cast<std::ptrdiff_t>(mSize);
+  #pragma omp parallel for simd schedule(simd:static)
+  for (std::ptrdiff_t i = 0; i < sizeSigned; ++i)
   {
-    mData[i]--;
+    const size_t idx = static_cast<size_t>(i);
+    mData[idx]--;
   }
 }// end of recomputeIndicesToCPP
 //----------------------------------------------------------------------------------------------------------------------
@@ -172,10 +175,12 @@ void IndexMatrix::recomputeIndicesToCPP()
  */
 void IndexMatrix::recomputeIndicesToMatlab()
 {
-  #pragma omp parallel for schedule(static)
-  for (size_t i = 0; i < mSize; i++)
+  const std::ptrdiff_t sizeSigned = static_cast<std::ptrdiff_t>(mSize);
+  #pragma omp parallel for simd schedule(simd:static)
+  for (std::ptrdiff_t i = 0; i < sizeSigned; ++i)
   {
-    mData[i]++;
+    const size_t idx = static_cast<size_t>(i);
+    mData[idx]++;
   }
 }// end of recomputeIndicesToMatlab
 //----------------------------------------------------------------------------------------------------------------------
@@ -186,8 +191,9 @@ void IndexMatrix::recomputeIndicesToMatlab()
 size_t IndexMatrix::getSizeOfAllCuboids() const
 {
   size_t elementSum = 0;
-  for (size_t cuboidIdx = 0; cuboidIdx < mDimensionSizes.ny; cuboidIdx++)
+  for (std::ptrdiff_t cuboidIdxSigned = 0; cuboidIdxSigned < static_cast<std::ptrdiff_t>(mDimensionSizes.ny); ++cuboidIdxSigned)
   {
+    const size_t cuboidIdx = static_cast<size_t>(cuboidIdxSigned);
     elementSum += (getBottomRightCorner(cuboidIdx) - getTopLeftCorner(cuboidIdx)).nElements();
   }
 

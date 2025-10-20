@@ -87,7 +87,7 @@ if(SZIP_FOUND)
 endif()
 
 if(MSVC)
-  target_compile_options(kspaceFirstOrder-OMP PRIVATE /O2 /fp:fast /arch:AVX /MP)
+  target_compile_options(kspaceFirstOrder-OMP PRIVATE /O2 /fp:fast /arch:AVX /MP /openmp:experimental)
   set_property(TARGET kspaceFirstOrder-OMP PROPERTY MSVC_RUNTIME_LIBRARY "MultiThreaded")
 else()
   target_compile_options(kspaceFirstOrder-OMP PRIVATE -O3)

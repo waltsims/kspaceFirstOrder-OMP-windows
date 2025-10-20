@@ -88,10 +88,12 @@ void BaseOutputStream::postProcess()
       const float scalingCoeff = 1.0f / (Parameters::getInstance().getNt() -
                                          Parameters::getInstance().getSamplingStartTimeIndex());
 
-      #pragma omp parallel for schedule(static)
-      for (size_t i = 0; i < mBufferSize; i++)
+      const std::ptrdiff_t bufferSize = static_cast<std::ptrdiff_t>(mBufferSize);
+      #pragma omp parallel for simd schedule(simd:static)
+      for (std::ptrdiff_t i = 0; i < bufferSize; ++i)
       {
-        mStoreBuffer[i] = sqrt(mStoreBuffer[i] * scalingCoeff);
+        const size_t idx = static_cast<size_t>(i);
+        mStoreBuffer[idx] = sqrt(mStoreBuffer[idx] * scalingCoeff);
       }
       break;
     }
@@ -134,10 +136,11 @@ void BaseOutputStream::allocateMemory()
     case ReduceOperator::kNone:
     {
       // Zero the matrix
-      #pragma omp parallel for schedule(static)
+      #pragma omp parallel for simd schedule(simd:static)
       for (std::ptrdiff_t i = 0; i < bufferSize; ++i)
       {
-        mStoreBuffer[i] = 0.0f;
+        const size_t idx = static_cast<size_t>(i);
+        mStoreBuffer[idx] = 0.0f;
       }
       break;
     }// kNone
@@ -145,10 +148,11 @@ void BaseOutputStream::allocateMemory()
     case ReduceOperator::kRms:
     {
       // Zero the matrix
-      #pragma omp parallel for schedule(static)
+      #pragma omp parallel for simd schedule(simd:static)
       for (std::ptrdiff_t i = 0; i < bufferSize; ++i)
       {
-        mStoreBuffer[i] = 0.0f;
+        const size_t idx = static_cast<size_t>(i);
+        mStoreBuffer[idx] = 0.0f;
       }
       break;
     }// kRms
@@ -156,10 +160,11 @@ void BaseOutputStream::allocateMemory()
     case ReduceOperator::kMax:
     {
       // Set the values to the highest negative float value
-      #pragma omp parallel for schedule(static)
+      #pragma omp parallel for simd schedule(simd:static)
       for (std::ptrdiff_t i = 0; i < bufferSize; ++i)
       {
-        mStoreBuffer[i] = -1.0f * std::numeric_limits<float>::max();
+        const size_t idx = static_cast<size_t>(i);
+        mStoreBuffer[idx] = -1.0f * std::numeric_limits<float>::max();
       }
       break;
     }// kMax
@@ -167,10 +172,11 @@ void BaseOutputStream::allocateMemory()
     case ReduceOperator::kMin:
     {
       // Set the values to the highest float value
-      #pragma omp parallel for schedule(static)
+      #pragma omp parallel for simd schedule(simd:static)
       for (std::ptrdiff_t i = 0; i < bufferSize; ++i)
       {
-        mStoreBuffer[i] = std::numeric_limits<float>::max();
+        const size_t idx = static_cast<size_t>(i);
+        mStoreBuffer[idx] = std::numeric_limits<float>::max();
       }
       break;
     }//kMin

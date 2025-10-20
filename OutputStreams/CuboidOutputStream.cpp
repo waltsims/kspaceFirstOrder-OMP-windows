@@ -89,7 +89,7 @@ void CuboidOutputStream::create()
 
   size_t actualPositionInBuffer = 0;
 
-  for (size_t cuboidIdx = 0; cuboidIdx < nCuboids; cuboidIdx++)
+  for (std::ptrdiff_t cuboidIdx = 0; cuboidIdx < static_cast<std::ptrdiff_t>(nCuboids); ++cuboidIdx)
   {
     CuboidInfo cuboidInfo;
 
@@ -149,7 +149,7 @@ void CuboidOutputStream::reopen()
   // Open the HDF5 group
   mGroup = mFile.openGroup(mFile.getRootGroup(), mRootObjectName);
 
-  for (size_t cuboidIdx = 0; cuboidIdx < nCuboids; cuboidIdx++)
+  for (std::ptrdiff_t cuboidIdx = 0; cuboidIdx < static_cast<std::ptrdiff_t>(nCuboids); ++cuboidIdx)
   {
     CuboidInfo cuboidInfo;
 
@@ -202,7 +202,7 @@ void CuboidOutputStream::sample()
       datasetPosition.nt = mSampledTimeStep;
 
       // Iterate over all cuboid to be sampled
-      for (size_t cuboidIdx = 0; cuboidIdx < mCuboidsInfo.size(); cuboidIdx++)
+      for (std::ptrdiff_t cuboidIdx = 0; cuboidIdx < static_cast<std::ptrdiff_t>(mCuboidsInfo.size()); ++cuboidIdx)
       {
         cuboidSize    = mSensorMask.getBottomRightCorner(cuboidIdx) - mSensorMask.getTopLeftCorner(cuboidIdx);
         cuboidSize.nt = 1;
@@ -281,7 +281,7 @@ void CuboidOutputStream::close()
   if (mGroup != H5I_BADID)
   {
     // Close all datasets and the group
-    for (size_t cuboidIdx = 0; cuboidIdx < mCuboidsInfo.size(); cuboidIdx++)
+    for (std::ptrdiff_t cuboidIdx = 0; cuboidIdx < static_cast<std::ptrdiff_t>(mCuboidsInfo.size()); ++cuboidIdx)
     {
       mFile.closeDataset(mCuboidsInfo[cuboidIdx].cuboidIdx);
     }
@@ -362,12 +362,13 @@ void CuboidOutputStream::sampleAggregated()
 
   // Parallelize within the cuboid - Since a typical number of cuboids is 1, then we have to paralelize inside
   #pragma omp parallel
-  const auto nCuboidsSigned = static_cast<std::ptrdiff_t>(mSensorMask.getDimensionSizes().ny);
-  for (std::ptrdiff_t cuboidIdxSigned = 0; cuboidIdxSigned < nCuboidsSigned; ++cuboidIdxSigned)
   {
-    const size_t cuboidIdx = static_cast<size_t>(cuboidIdxSigned);
-    const DimensionSizes topLeftCorner     = mSensorMask.getTopLeftCorner(cuboidIdx);
-    const DimensionSizes bottomRightCorner = mSensorMask.getBottomRightCorner(cuboidIdx);
+    const std::ptrdiff_t nCuboidsSigned = static_cast<std::ptrdiff_t>(mSensorMask.getDimensionSizes().ny);
+    for (std::ptrdiff_t cuboidIdxSigned = 0; cuboidIdxSigned < nCuboidsSigned; ++cuboidIdxSigned)
+    {
+      const size_t cuboidIdx = static_cast<size_t>(cuboidIdxSigned);
+      const DimensionSizes topLeftCorner     = mSensorMask.getTopLeftCorner(cuboidIdx);
+      const DimensionSizes bottomRightCorner = mSensorMask.getBottomRightCorner(cuboidIdx);
 
     size_t cuboidSlabSize = (bottomRightCorner.ny - topLeftCorner.ny + 1) *
                             (bottomRightCorner.nx - topLeftCorner.nx + 1);
@@ -436,6 +437,7 @@ void CuboidOutputStream::sampleAggregated()
     {
       cuboidInBufferStart += (bottomRightCorner - topLeftCorner).nElements();
     }
+    }
   }
 }// end of sampleAggregated
 //----------------------------------------------------------------------------------------------------------------------
@@ -453,7 +455,7 @@ void CuboidOutputStream::flushBufferToFile()
     position.nt = mSampledTimeStep;
   }
 
-  for (size_t cuboidIdx = 0; cuboidIdx < mCuboidsInfo.size(); cuboidIdx++)
+  for (std::ptrdiff_t cuboidIdx = 0; cuboidIdx < static_cast<std::ptrdiff_t>(mCuboidsInfo.size()); ++cuboidIdx)
   {
     blockSize    = mSensorMask.getBottomRightCorner(cuboidIdx) - mSensorMask.getTopLeftCorner(cuboidIdx);
     blockSize.nt = 1;

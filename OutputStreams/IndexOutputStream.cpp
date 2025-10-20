@@ -175,10 +175,11 @@ void IndexOutputStream::sample()
   {
     case ReduceOperator::kNone:
     {
-      #pragma omp parallel for schedule(static)
+      #pragma omp parallel for simd schedule(simd:static)
       for (std::ptrdiff_t i = 0; i < bufferSize; ++i)
       {
-        mStoreBuffer[i] = sourceData[sensorData[i]];
+        const size_t idx = static_cast<size_t>(i);
+        mStoreBuffer[idx] = sourceData[sensorData[idx]];
       }
       // Only raw time series are flushed down to the disk every time step
       flushBufferToFile();
@@ -196,20 +197,22 @@ void IndexOutputStream::sample()
 
     case ReduceOperator::kRms:
     {
-      #pragma omp parallel for schedule(static)
+      #pragma omp parallel for simd schedule(simd:static)
       for (std::ptrdiff_t i = 0; i < bufferSize; ++i)
       {
-        mStoreBuffer[i] += (sourceData[sensorData[i]] * sourceData[sensorData[i]]);
+        const size_t idx = static_cast<size_t>(i);
+        mStoreBuffer[idx] += (sourceData[sensorData[idx]] * sourceData[sensorData[idx]]);
       }
       break;
     }// case kRms
 
     case ReduceOperator::kMax:
     {
-      #pragma omp parallel for schedule(static)
+      #pragma omp parallel for simd schedule(simd:static)
       for (std::ptrdiff_t i = 0; i < bufferSize; ++i)
       {
-        mStoreBuffer[i] = std::max(mStoreBuffer[i], sourceData[sensorData[i]]);
+        const size_t idx = static_cast<size_t>(i);
+        mStoreBuffer[idx] = std::max(mStoreBuffer[idx], sourceData[sensorData[idx]]);
       }
       break;
     }// case kMax
@@ -219,7 +222,8 @@ void IndexOutputStream::sample()
       #pragma omp parallel for
       for (std::ptrdiff_t i = 0; i < bufferSize; ++i)
       {
-        mStoreBuffer[i] = std::min(mStoreBuffer[i], sourceData[sensorData[i]]);
+        const size_t idx = static_cast<size_t>(i);
+        mStoreBuffer[idx] = std::min(mStoreBuffer[idx], sourceData[sensorData[idx]]);
       }
       break;
     } //case kMin

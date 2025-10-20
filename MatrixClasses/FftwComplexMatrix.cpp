@@ -29,6 +29,7 @@
  * If not, see [http://www.gnu.org/licenses/](http://www.gnu.org/licenses/).
  */
 
+#include <cstddef>
 #include <stdexcept>
 
 #include <MatrixClasses/FftwComplexMatrix.h>
@@ -171,45 +172,34 @@ void FftwComplexMatrix::createR2CFftPlan1DX(RealMatrix& inMatrix)
   dims[0].n  = nx;
   dims[0].os = 1;
 
-  // Default value
   int        howManyRank = 0;
-  // Can fit both 3D and 2D simulations
   fftw_iodim howManyDims[2];
 
-  // Set dimensions for 3D simulations
   if (Parameters::getInstance().isSimulation3D())
   {
-    // GNU Compiler + FFTW does it all at once
-    #if (defined(__GNUC__) || defined(__GNUG__)) && !(defined(__clang__) || defined(__INTEL_COMPILER))
-      // How FFTs we need to perform - Z * Y
-      howManyRank = 2;
-      // z dim
-      howManyDims[0].is = nx * ny;
-      howManyDims[0].n  = nz;
-      howManyDims[0].os = nxR * ny;
+    howManyRank = 2;
 
-      // y dim
-      howManyDims[1].is = nx;
-      howManyDims[1].n  = ny;
-      howManyDims[1].os = nxR;
-    #endif
+    // z dim
+    howManyDims[0].is = nx * ny;
+    howManyDims[0].n  = nz;
+    howManyDims[0].os = nxR * ny;
 
-    // Intel Compiler + MKL does it slab by slab
+    // y dim
+    howManyDims[1].is = nx;
+    howManyDims[1].n  = ny;
+    howManyDims[1].os = nxR;
+
     #if (defined(__INTEL_COMPILER))
+      // Intel Compiler + MKL does it slab by slab
       howManyRank = 1;
-      // y dim
       howManyDims[0].is = nx;
       howManyDims[0].n  = ny;
       howManyDims[0].os = nxR;
     #endif
   }
-  // Set dimensions for 2D simulations
   else if (Parameters::getInstance().isSimulation2D())
   {
-    // How FFTs we need to perform - Y
     howManyRank = 1;
-
-    // y dim
     howManyDims[0].is = nx;
     howManyDims[0].n  = ny;
     howManyDims[0].os = nxR;
@@ -255,39 +245,28 @@ void FftwComplexMatrix::createR2CFftPlan1DY(RealMatrix& inMatrix)
 
   if (Parameters::getInstance().isSimulation3D())
   {
-    // GNU Compiler + FFTW does it all at once
-    #if (defined(__GNUC__) || defined(__GNUG__)) && !(defined(__clang__) || defined(__INTEL_COMPILER))
-      // How FFTs we need to perform - Z * X
-      howManyRank = 2;
+    howManyRank = 2;
 
-      // z dim
-      howManyDims[0].is = nx * ny;
-      howManyDims[0].n  = nz;
-      howManyDims[0].os = nx * nyR;
+    // z dim
+    howManyDims[0].is = nx * ny;
+    howManyDims[0].n  = nz;
+    howManyDims[0].os = nx * nyR;
 
-      // x dim
-      howManyDims[1].is = 1;
-      howManyDims[1].n  = nx;
-      howManyDims[1].os = 1;
-    #endif
+    // x dim
+    howManyDims[1].is = 1;
+    howManyDims[1].n  = nx;
+    howManyDims[1].os = 1;
 
-     // Intel Compiler + MKL does it slab by slab
     #if (defined(__INTEL_COMPILER))
       howManyRank = 1;
-
-      // x dim
       howManyDims[0].is = 1;
       howManyDims[0].n  = nx;
       howManyDims[0].os = 1;
     #endif
   }
-  // 2D simulation
   else if (Parameters::getInstance().isSimulation2D())
   {
-    // How FFTs we need to perform - X
     howManyRank = 1;
-
-    // x dim
     howManyDims[0].is = 1;
     howManyDims[0].n  = nx;
     howManyDims[0].os = 1;
@@ -329,29 +308,22 @@ void FftwComplexMatrix::createR2CFftPlan1DZ(RealMatrix& inMatrix)
     dims[0].n  = nz;
     dims[0].os = nx * ny;
 
-    // GNU Compiler + FFTW
-    #if (defined(__GNUC__) || defined(__GNUG__)) && !(defined(__clang__) || defined(__INTEL_COMPILER))
-      // How FFTs we need to perform - Y * X
-      const int  howManyRank = 2;
-      fftw_iodim howManyDims[2];
+    int howManyRank = 2;
+    fftw_iodim howManyDims[2];
 
-      // y dim
-      howManyDims[0].is = nx;
-      howManyDims[0].n  = ny;
-      howManyDims[0].os = nx;
+    // Default layout (matches GNU path)
+    howManyDims[0].is = nx;
+    howManyDims[0].n  = ny;
+    howManyDims[0].os = nx;
 
-      // x dim
-      howManyDims[1].is = 1;
-      howManyDims[1].n  = nx;
-      howManyDims[1].os = 1;
-    #endif
+    howManyDims[1].is = 1;
+    howManyDims[1].n  = nx;
+    howManyDims[1].os = 1;
 
     // Intel Compiler + MKL does it slab by slab
     #if (defined(__INTEL_COMPILER))
-      const int  howManyRank = 1;
-      fftw_iodim howManyDims[1];
-
-      // x dim
+      howManyRank = 1;
+      // Only x dimension is iterated
       howManyDims[0].is = 1;
       howManyDims[0].n  = nx;
       howManyDims[0].os = 1;
@@ -500,11 +472,8 @@ void FftwComplexMatrix::createC2RFftPlan1DY(RealMatrix& outMatrix)
       howManyDims[1].os = 1;
     #endif
 
-    // Intel Compiler + MKL does it slab by slab
     #if (defined(__INTEL_COMPILER))
       howManyRank = 1;
-
-      // x dim
       howManyDims[0].is = 1;
       howManyDims[0].n  = nx;
       howManyDims[0].os = 1;
@@ -557,29 +526,21 @@ void FftwComplexMatrix::createC2RFftPlan1DZ(RealMatrix& outMatrix)
     dims[0].n  = nz;
     dims[0].os = nx * ny;
 
-    // GNU Compiler + FFTW
-    #if (defined(__GNUC__) || defined(__GNUG__)) && !(defined(__clang__) || defined(__INTEL_COMPILER))
-      // How FFTs we need to perform - Y * X
-      const int  howManyRank = 2;
-      fftw_iodim howManyDims[2];
+    int howManyRank = 2;
+    fftw_iodim howManyDims[2];
 
-      // y dim
-      howManyDims[0].is = nx;
-      howManyDims[0].n  = ny;
-      howManyDims[0].os = nx;
+    // Default layout (matches GNU behaviour)
+    howManyDims[0].is = nx;
+    howManyDims[0].n  = ny;
+    howManyDims[0].os = nx;
 
-      // x dim
-      howManyDims[1].is = 1;
-      howManyDims[1].n  = nx;
-      howManyDims[1].os = 1;
-    #endif
+    howManyDims[1].is = 1;
+    howManyDims[1].n  = nx;
+    howManyDims[1].os = 1;
 
     // Intel Compiler + MKL does it slab by slab
     #if (defined(__INTEL_COMPILER))
-      const int howManyRank = 1;
-      fftw_iodim howManyDims[1];
-
-      // x dim
+      howManyRank = 1;
       howManyDims[0].is = 1;
       howManyDims[0].n  = nx;
       howManyDims[0].os = 1;
@@ -657,7 +618,7 @@ void FftwComplexMatrix::computeR2CFft1DX(RealMatrix& inMatrix)
     // Intel Compiler + MKL
     #if (defined(__INTEL_COMPILER))
       const DimensionSizes dims = Parameters::getInstance().getFullDimensionSizes();
-      for (size_t slab_id = 0; slab_id < dims.nz; slab_id++)
+      for (std::ptrdiff_t slab_id = 0; slab_id < static_cast<std::ptrdiff_t>(dims.nz); ++slab_id)
       {
         fftwf_execute_dft_r2c(mR2CFftPlan1DX,
                               &inMatrix.getData()[slab_id * dims.nx * dims.ny],
@@ -690,7 +651,7 @@ void FftwComplexMatrix::computeR2CFft1DY(RealMatrix& inMatrix)
     // Intel Compiler + MKL
     #if (defined(__INTEL_COMPILER))
       const DimensionSizes dims = Parameters::getInstance().getFullDimensionSizes();
-      for (size_t slab_id = 0; slab_id < dims.nz; slab_id++)
+      for (std::ptrdiff_t slab_id = 0; slab_id < static_cast<std::ptrdiff_t>(dims.nz); ++slab_id)
       {
         fftwf_execute_dft_r2c(mR2CFftPlan1DY,
                               &inMatrix.getData()[slab_id * dims.nx * dims.ny],
@@ -723,7 +684,7 @@ void FftwComplexMatrix::computeR2CFft1DZ(RealMatrix& inMatrix)
     // Intel Compiler + MKL
     #if (defined(__INTEL_COMPILER))
       const DimensionSizes dims = Parameters::getInstance().getFullDimensionSizes();
-      for (size_t slab_id = 0; slab_id < dims.ny; slab_id++)
+      for (std::ptrdiff_t slab_id = 0; slab_id < static_cast<std::ptrdiff_t>(dims.ny); ++slab_id)
       {
         fftwf_execute_dft_r2c(mR2CFftPlan1DZ,
                               &inMatrix.getData()[slab_id * dims.nx],
@@ -756,7 +717,7 @@ void FftwComplexMatrix::computeC2RFft1DX(RealMatrix& outMatrix)
     // Intel Compiler + MKL
     #if (defined(__INTEL_COMPILER))
       const DimensionSizes dims = Parameters::getInstance().getFullDimensionSizes();
-      for (size_t slab_id = 0; slab_id < dims.nz; slab_id++)
+      for (std::ptrdiff_t slab_id = 0; slab_id < static_cast<std::ptrdiff_t>(dims.nz); ++slab_id)
       {
         fftwf_execute_dft_c2r(mC2RFftPlan1DX,
                               (fftwf_complex *) &mData[slab_id * 2 * (dims.nx / 2 + 1) * dims.ny],
@@ -789,7 +750,7 @@ void FftwComplexMatrix::computeC2RFft1DY(RealMatrix& outMatrix)
     // Intel Compiler + MKL
     #if (defined(__INTEL_COMPILER))
       const DimensionSizes dims = Parameters::getInstance().getFullDimensionSizes();
-      for (size_t slab_id = 0; slab_id < dims.nz; slab_id++)
+      for (std::ptrdiff_t slab_id = 0; slab_id < static_cast<std::ptrdiff_t>(dims.nz); ++slab_id)
       {
         fftwf_execute_dft_c2r(mC2RFftPlan1DY,
                               (fftwf_complex *) &mData[slab_id * dims.nx * 2 * (dims.ny / 2 + 1)],
@@ -822,7 +783,7 @@ void FftwComplexMatrix::computeC2RFft1DZ(RealMatrix& outMatrix)
     // Intel Compiler + MKL
     #if (defined(__INTEL_COMPILER))
       const DimensionSizes dims = Parameters::getInstance().getFullDimensionSizes();
-      for (size_t slab_id = 0; slab_id < dims.ny; slab_id++)
+      for (std::ptrdiff_t slab_id = 0; slab_id < static_cast<std::ptrdiff_t>(dims.ny); ++slab_id)
       {
         fftwf_execute_dft_c2r(mC2RFftPlan1DZ,
                               (fftwf_complex *) &mData[slab_id * 2 * dims.nx ],

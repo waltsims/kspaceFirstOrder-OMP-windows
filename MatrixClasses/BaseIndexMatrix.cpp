@@ -29,6 +29,7 @@
  * If not, see [http://www.gnu.org/licenses/](http://www.gnu.org/licenses/).
  */
 
+#include <cstddef>
 #include <immintrin.h>
 #include <assert.h>
 
@@ -58,10 +59,12 @@ BaseIndexMatrix::BaseIndexMatrix()
  */
 void BaseIndexMatrix::zeroMatrix()
 {
-  #pragma omp parallel for schedule(static)
-  for (size_t i = 0; i < mCapacity; i++)
+  const std::ptrdiff_t capacity = static_cast<std::ptrdiff_t>(mCapacity);
+  #pragma omp parallel for simd schedule(simd:static)
+  for (std::ptrdiff_t i = 0; i < capacity; ++i)
   {
-    mData[i] = size_t(0);
+    const size_t idx = static_cast<size_t>(i);
+    mData[idx] = size_t(0);
   }
 }// end of zeroMatrix
 //----------------------------------------------------------------------------------------------------------------------

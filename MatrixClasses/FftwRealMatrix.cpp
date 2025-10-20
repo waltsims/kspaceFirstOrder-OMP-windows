@@ -29,6 +29,7 @@
  * If not, see [http://www.gnu.org/licenses/](http://www.gnu.org/licenses/).
  */
 
+#include <cstddef>
 #include <stdexcept>
 #include <array>
 
@@ -194,38 +195,44 @@ void FftwRealMatrix::createPlans1DY(RealMatrix& inMatrix)
  * Computer forward out-of-place 1D Real-to-Real transform.
  */
 void FftwRealMatrix::computeForwardR2RFft1DY(const TransformKind kind,
-                                             RealMatrix&         inMatrix)
+                                            RealMatrix&         inMatrix)
 {
+  bool executed = false;
+
   // GNU compiler + FFTW
   #if (defined(__GNUC__) || defined(__GNUG__)) && !(defined(__clang__) || defined(__INTEL_COMPILER))
     if (mOutPlaceR2RPlans1DY[kind])
     {
       fftwf_execute_r2r(mOutPlaceR2RPlans1DY[kind], inMatrix.getData(), mData);
+      executed = true;
     }
   #endif
 
   // Intel compiler + MKL
   #if (defined(__INTEL_COMPILER))
-    if (mInPlaceR2RPlans1DY[kind])
+    if (!executed && mInPlaceR2RPlans1DY[kind])
     {
       // Transpose matrix
       mkl_somatcopy ('r', 't', mDimensionSizes.ny, mDimensionSizes.nx, 1.0f, inMatrix.getData(),
                                mDimensionSizes.nx, mData, mDimensionSizes.ny);
 
       //Intel Compiler + MKL
+      const std::ptrdiff_t slabCount = static_cast<std::ptrdiff_t>(mDimensionSizes.nx);
       #pragma omp parallel for schedule(static)
-      for (size_t slab_id = 0; slab_id < mDimensionSizes.nx; slab_id++)
+      for (std::ptrdiff_t slab_id = 0; slab_id < slabCount; ++slab_id)
       {
         fftwf_execute_r2r(mInPlaceR2RPlans1DY[kind],
-                          &mData[slab_id * mDimensionSizes.ny],
-                          &mData[slab_id * mDimensionSizes.ny]);
+                          &mData[static_cast<size_t>(slab_id) * mDimensionSizes.ny],
+                          &mData[static_cast<size_t>(slab_id) * mDimensionSizes.ny]);
       }
 
       mkl_simatcopy ('r', 't', mDimensionSizes.nx, mDimensionSizes.ny, 1.0f,
                         mData, mDimensionSizes.ny, mDimensionSizes.nx);
+      executed = true;
     }
   #endif
-  else
+
+  if (!executed)
   {
     throw std::runtime_error(Logger::formatMessage(kErrFmtExecuteR2RFftPlan1D, int(kind)));
   }
@@ -238,36 +245,41 @@ void FftwRealMatrix::computeForwardR2RFft1DY(const TransformKind kind,
 void FftwRealMatrix::computeInverseR2RFft1DY(const TransformKind kind,
                                              RealMatrix&         outMatrix)
 {
+  bool executed = false;
+
   // GNU compiler + FFTW
   #if (defined(__GNUC__) || defined(__GNUG__)) && !(defined(__clang__) || defined(__INTEL_COMPILER))
     if (mOutPlaceR2RPlans1DY[kind])
     {
       fftwf_execute_r2r(mOutPlaceR2RPlans1DY[kind], mData, outMatrix.getData());
+      executed = true;
     }
   #endif
 
   // Intel compiler + MKL
   #if (defined(__INTEL_COMPILER))
-    if (mInPlaceR2RPlans1DY[kind])
+    if (!executed && mInPlaceR2RPlans1DY[kind])
     {
       // Transpose matrix
       mkl_simatcopy ('r', 't', mDimensionSizes.ny, mDimensionSizes.nx, 1.0f,
                         mData, mDimensionSizes.nx, mDimensionSizes.ny);
 
       //Intel Compiler + MKL
+      const std::ptrdiff_t slabCount = static_cast<std::ptrdiff_t>(mDimensionSizes.nx);
       #pragma omp parallel for schedule(static)
-      for (size_t slab_id = 0; slab_id < mDimensionSizes.nx; slab_id++)
+      for (std::ptrdiff_t slab_id = 0; slab_id < slabCount; ++slab_id)
       {
         fftwf_execute_r2r(mInPlaceR2RPlans1DY[kind],
-                          &mData[slab_id * mDimensionSizes.ny],
-                          &mData[slab_id * mDimensionSizes.ny]);
+                          &mData[static_cast<size_t>(slab_id) * mDimensionSizes.ny],
+                          &mData[static_cast<size_t>(slab_id) * mDimensionSizes.ny]);
       }
 
       mkl_somatcopy ('r', 't', mDimensionSizes.nx, mDimensionSizes.ny, 1.0f, mData,
                                mDimensionSizes.ny, outMatrix.getData(), mDimensionSizes.nx);
+      executed = true;
     }
   #endif
-  else
+  if (!executed)
   {
     throw std::runtime_error(Logger::formatMessage(kErrFmtExecuteR2RFftPlan1D, int(kind)));
   }
@@ -294,12 +306,13 @@ void FftwRealMatrix::computeR2RFft1DY(const TransformKind kind)
 
 
       //Intel Compiler + MKL
+      const std::ptrdiff_t slabCount = static_cast<std::ptrdiff_t>(mDimensionSizes.nx);
       #pragma omp parallel for schedule(static)
-      for (size_t slab_id = 0; slab_id < mDimensionSizes.nx; slab_id++)
+      for (std::ptrdiff_t slab_id = 0; slab_id < slabCount; ++slab_id++)
       {
         fftwf_execute_r2r(mInPlaceR2RPlans1DY[kind],
-                          &mData[slab_id * mDimensionSizes.ny],
-                          &mData[slab_id * mDimensionSizes.ny]);
+                          &mData[static_cast<size_t>(slab_id) * mDimensionSizes.ny],
+                          &mData[static_cast<size_t>(slab_id) * mDimensionSizes.ny]);
       }
 
       mkl_simatcopy ('r', 't', mDimensionSizes.nx, mDimensionSizes.ny, 1.0f, mData,

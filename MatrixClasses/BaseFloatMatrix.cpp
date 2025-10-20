@@ -29,6 +29,7 @@
  * If not, see [http://www.gnu.org/licenses/](http://www.gnu.org/licenses/).
  */
 
+#include <cstddef>
 #include <immintrin.h>
 #include <assert.h>
 
@@ -59,11 +60,13 @@ BaseFloatMatrix::BaseFloatMatrix()
 void BaseFloatMatrix::copyData(const BaseFloatMatrix& src)
 {
   const float* srcData = src.getData();
+  const std::ptrdiff_t capacity = static_cast<std::ptrdiff_t>(mCapacity);
 
-  #pragma omp parallel for schedule(static) firstprivate(srcData)
-  for (size_t i = 0; i < mCapacity; i++)
+  #pragma omp parallel for simd schedule(simd:static) firstprivate(srcData)
+  for (std::ptrdiff_t i = 0; i < capacity; ++i)
   {
-    mData[i] = srcData[i];
+    const size_t idx = static_cast<size_t>(i);
+    mData[idx] = srcData[idx];
   }
 }// end of copyData
 //----------------------------------------------------------------------------------------------------------------------
@@ -73,10 +76,12 @@ void BaseFloatMatrix::copyData(const BaseFloatMatrix& src)
  */
 void BaseFloatMatrix::zeroMatrix()
 {
-  #pragma omp parallel for schedule(static)
-  for (size_t i = 0; i < mCapacity; i++)
+  const std::ptrdiff_t capacity = static_cast<std::ptrdiff_t>(mCapacity);
+  #pragma omp parallel for simd schedule(simd:static)
+  for (std::ptrdiff_t i = 0; i < capacity; ++i)
   {
-    mData[i] = 0.0f;
+    const size_t idx = static_cast<size_t>(i);
+    mData[idx] = 0.0f;
   }
 }// end of zeroMatrix
 //----------------------------------------------------------------------------------------------------------------------
@@ -86,10 +91,12 @@ void BaseFloatMatrix::zeroMatrix()
  */
 void BaseFloatMatrix::scalarDividedBy(const float scalar)
 {
-  #pragma omp parallel for schedule(static) firstprivate(scalar)
-  for (size_t i = 0; i < mCapacity; i++)
+  const std::ptrdiff_t capacity = static_cast<std::ptrdiff_t>(mCapacity);
+  #pragma omp parallel for simd schedule(simd:static) firstprivate(scalar)
+  for (std::ptrdiff_t i = 0; i < capacity; ++i)
   {
-    mData[i] = scalar / mData[i];
+    const size_t idx = static_cast<size_t>(i);
+    mData[idx] = scalar / mData[idx];
   }
 }// end of scalarDividedBy
 //----------------------------------------------------------------------------------------------------------------------
