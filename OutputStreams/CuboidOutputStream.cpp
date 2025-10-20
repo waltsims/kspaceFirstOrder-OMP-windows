@@ -31,6 +31,7 @@
  */
 
 #include <algorithm>
+#include <cstddef>
 
 #include <OutputStreams/CuboidOutputStream.h>
 #include <Parameters/Parameters.h>
@@ -361,8 +362,10 @@ void CuboidOutputStream::sampleAggregated()
 
   // Parallelize within the cuboid - Since a typical number of cuboids is 1, then we have to paralelize inside
   #pragma omp parallel
-  for (size_t cuboidIdx = 0; cuboidIdx < mSensorMask.getDimensionSizes().ny; cuboidIdx++)
+  const auto nCuboidsSigned = static_cast<std::ptrdiff_t>(mSensorMask.getDimensionSizes().ny);
+  for (std::ptrdiff_t cuboidIdxSigned = 0; cuboidIdxSigned < nCuboidsSigned; ++cuboidIdxSigned)
   {
+    const size_t cuboidIdx = static_cast<size_t>(cuboidIdxSigned);
     const DimensionSizes topLeftCorner     = mSensorMask.getTopLeftCorner(cuboidIdx);
     const DimensionSizes bottomRightCorner = mSensorMask.getBottomRightCorner(cuboidIdx);
 
@@ -370,19 +373,32 @@ void CuboidOutputStream::sampleAggregated()
                             (bottomRightCorner.nx - topLeftCorner.nx + 1);
     size_t cuboidRowSize  = (bottomRightCorner.nx - topLeftCorner.nx + 1);
 
-    #pragma omp for collapse(3)
-    for (size_t z = topLeftCorner.nz; z <= bottomRightCorner.nz; z++)
-    {
-      for (size_t y = topLeftCorner.ny; y <= bottomRightCorner.ny; y++)
-      {
-        for (size_t x = topLeftCorner.nx; x <= bottomRightCorner.nx; x++)
-        {
-          const size_t storeBufferIndex = cuboidInBufferStart +
-                                          (z - topLeftCorner.nz) * cuboidSlabSize +
-                                          (y - topLeftCorner.ny) * cuboidRowSize  +
-                                          (x - topLeftCorner.nx);
+    const std::ptrdiff_t startZ = static_cast<std::ptrdiff_t>(topLeftCorner.nz);
+    const std::ptrdiff_t endZ   = static_cast<std::ptrdiff_t>(bottomRightCorner.nz);
+    const std::ptrdiff_t startY = static_cast<std::ptrdiff_t>(topLeftCorner.ny);
+    const std::ptrdiff_t endY   = static_cast<std::ptrdiff_t>(bottomRightCorner.ny);
+    const std::ptrdiff_t startX = static_cast<std::ptrdiff_t>(topLeftCorner.nx);
+    const std::ptrdiff_t endX   = static_cast<std::ptrdiff_t>(bottomRightCorner.nx);
 
-          const size_t sourceIndex = z * slabSize + y * rowSize + x;
+    #pragma omp for collapse(3)
+    for (std::ptrdiff_t z = startZ; z <= endZ; ++z)
+    {
+      for (std::ptrdiff_t y = startY; y <= endY; ++y)
+      {
+        for (std::ptrdiff_t x = startX; x <= endX; ++x)
+        {
+          const size_t zOffset = static_cast<size_t>(z - startZ);
+          const size_t yOffset = static_cast<size_t>(y - startY);
+          const size_t xOffset = static_cast<size_t>(x - startX);
+
+          const size_t storeBufferIndex = cuboidInBufferStart +
+                                          zOffset * cuboidSlabSize +
+                                          yOffset * cuboidRowSize  +
+                                          xOffset;
+
+          const size_t sourceIndex = static_cast<size_t>(z) * slabSize +
+                                     static_cast<size_t>(y) * rowSize +
+                                     static_cast<size_t>(x);
 
           // Based on template parameter
           switch (reduceOp)

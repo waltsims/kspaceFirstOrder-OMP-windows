@@ -29,6 +29,7 @@
  * If not, see [http://www.gnu.org/licenses/](http://www.gnu.org/licenses/).
  */
 
+#include <cstddef>
 #include <cmath>
 #include <immintrin.h>
 #include <limits>
@@ -127,13 +128,14 @@ void BaseOutputStream::allocateMemory()
   }
 
   // We need different initialization for different reduction ops.
+  const std::ptrdiff_t bufferSize = static_cast<std::ptrdiff_t>(mBufferSize);
   switch (mReduceOp)
   {
     case ReduceOperator::kNone:
     {
       // Zero the matrix
       #pragma omp parallel for schedule(static)
-      for (size_t i = 0; i < mBufferSize; i++)
+      for (std::ptrdiff_t i = 0; i < bufferSize; ++i)
       {
         mStoreBuffer[i] = 0.0f;
       }
@@ -144,7 +146,7 @@ void BaseOutputStream::allocateMemory()
     {
       // Zero the matrix
       #pragma omp parallel for schedule(static)
-      for (size_t i = 0; i < mBufferSize; i++)
+      for (std::ptrdiff_t i = 0; i < bufferSize; ++i)
       {
         mStoreBuffer[i] = 0.0f;
       }
@@ -155,7 +157,7 @@ void BaseOutputStream::allocateMemory()
     {
       // Set the values to the highest negative float value
       #pragma omp parallel for schedule(static)
-      for (size_t i = 0; i < mBufferSize; i++)
+      for (std::ptrdiff_t i = 0; i < bufferSize; ++i)
       {
         mStoreBuffer[i] = -1.0f * std::numeric_limits<float>::max();
       }
@@ -166,7 +168,7 @@ void BaseOutputStream::allocateMemory()
     {
       // Set the values to the highest float value
       #pragma omp parallel for schedule(static)
-      for (size_t i = 0; i < mBufferSize; i++)
+      for (std::ptrdiff_t i = 0; i < bufferSize; ++i)
       {
         mStoreBuffer[i] = std::numeric_limits<float>::max();
       }
