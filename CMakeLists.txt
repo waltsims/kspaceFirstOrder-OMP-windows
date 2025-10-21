@@ -22,7 +22,7 @@ if(NOT HDF5_INCLUDE_DIR OR NOT HDF5_LIBRARY OR NOT HDF5_HL_LIBRARY)
 endif()
 
 find_package(ZLIB REQUIRED)
-find_library(SZ_LIBRARY NAMES sz szip)
+find_library(SZ_LIBRARY NAMES sz szip aec)
 find_library(DL_LIBRARY NAMES dl)
 
 set(KSPACE_SOURCES

@@ -46,7 +46,7 @@ Linux build requires only a recent GNU compiler, FFTW, and HDF5:
 
 ```bash
 sudo apt-get update
-sudo apt-get install -y g++-12 cmake libfftw3-dev libhdf5-dev libszip-dev zlib1g-dev
+sudo apt-get install -y g++-12 cmake libfftw3-dev libhdf5-dev zlib1g-dev
 cmake -S . -B build -DCMAKE_BUILD_TYPE=Release -DCMAKE_CXX_COMPILER=g++-12
 cmake --build build --parallel
 ```
