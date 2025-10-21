@@ -466,9 +466,7 @@
 #include <map>
 
 #include <Utils/DimensionSizes.h>
-
-/// Datatype of dataset names in the HDF5 files.
-using MatrixName = std::string;
+#include <Utils/MatrixName.h>
 
 /**
  * @class Hdf5File
