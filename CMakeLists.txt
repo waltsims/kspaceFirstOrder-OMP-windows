@@ -14,18 +14,13 @@ if(NOT FFTW3_INCLUDE_DIR OR NOT FFTW3F_LIBRARY OR NOT FFTW3F_OMP_LIBRARY)
   message(FATAL_ERROR "FFTW3 single-precision libraries with OpenMP support not found. Install libfftw3-dev.")
 endif()
 
-find_path(HDF5_INCLUDE_DIR NAMES hdf5.h PATH_SUFFIXES hdf5/serial)
-find_library(HDF5_LIBRARY NAMES hdf5 hdf5_serial)
-find_library(HDF5_HL_LIBRARY NAMES hdf5_hl hdf5_serial_hl)
-if(NOT HDF5_INCLUDE_DIR OR NOT HDF5_LIBRARY OR NOT HDF5_HL_LIBRARY)
-  message(FATAL_ERROR "HDF5 libraries not found. Install libhdf5-dev.")
-endif()
+find_package(HDF5 REQUIRED COMPONENTS C HL)
 
 find_package(ZLIB REQUIRED)
 find_library(SZ_LIBRARY NAMES sz szip aec)
 find_library(DL_LIBRARY NAMES dl)
 
-set(KSPACE_SOURCES
+add_executable(kspaceFirstOrder-OMP
   main.cpp
   Containers/MatrixContainer.cpp
   Containers/OutputStreamContainer.cpp
@@ -49,13 +44,11 @@ set(KSPACE_SOURCES
   Parameters/Parameters.cpp
 )
 
-add_executable(kspaceFirstOrder-OMP ${KSPACE_SOURCES})
-
 target_include_directories(kspaceFirstOrder-OMP
   PRIVATE
     ${PROJECT_SOURCE_DIR}
     ${FFTW3_INCLUDE_DIR}
-    ${HDF5_INCLUDE_DIR}
+    ${HDF5_INCLUDE_DIRS}
 )
 
 find_package(Git QUIET)
@@ -80,8 +73,7 @@ target_link_libraries(kspaceFirstOrder-OMP
     OpenMP::OpenMP_CXX
     ${FFTW3F_LIBRARY}
     ${FFTW3F_OMP_LIBRARY}
-    ${HDF5_HL_LIBRARY}
-    ${HDF5_LIBRARY}
+    ${HDF5_LIBRARIES}
     ZLIB::ZLIB
 )
 
