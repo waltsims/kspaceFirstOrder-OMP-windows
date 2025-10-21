@@ -38,6 +38,19 @@ axisymmetric coordinate systems.
 
 ## Compilation
 
+### Quick start (CMake on Linux)
+
+The repository now ships with a minimal CMake build that mirrors the original
+Makefile configuration but is easier to understand and automate. A typical
+Linux build requires only a recent GNU compiler, FFTW, and HDF5:
+
+```bash
+sudo apt-get update
+sudo apt-get install -y g++-12 cmake libfftw3-dev libhdf5-dev libszip-dev zlib1g-dev
+cmake -S . -B build -DCMAKE_BUILD_TYPE=Release -DCMAKE_CXX_COMPILER=g++-12
+cmake --build build --parallel
+```
+
 The source codes of `kspaceFirstOrder-OMP` are written using the C++-11 standard
 and use the OpenMP 4.0, FFTW 3.3.8 or MKL 11, and HDF5 1.10.x libraries.
 
