@@ -48,6 +48,8 @@ target_include_directories(kspaceFirstOrder-OMP
   PRIVATE
     ${PROJECT_SOURCE_DIR}
     ${FFTW3_INCLUDE_DIR}
+    ${HDF5_INCLUDE_DIRS}
+    ${ZLIB_INCLUDE_DIRS}
 )
 
 find_package(Git QUIET)
@@ -72,9 +74,9 @@ target_link_libraries(kspaceFirstOrder-OMP
     OpenMP::OpenMP_CXX
     ${FFTW3F_LIBRARY}
     ${FFTW3F_OMP_LIBRARY}
-    HDF5::C
-    HDF5::HL
-    ZLIB::ZLIB
+    ${HDF5_C_LIBRARIES}
+    ${HDF5_HL_LIBRARIES}
+    ${ZLIB_LIBRARIES}
 )
 
 if(SZ_LIBRARY)
