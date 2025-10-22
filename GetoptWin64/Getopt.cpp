@@ -38,6 +38,7 @@ EXPRESSLY ADVISED OF THE POSSIBILITY OF SUCH DAMAGES.
 #define _CRT_SECURE_NO_WARNINGS
 #include <stdlib.h>
 #include <stdio.h>
+#include <wchar.h>
 #include "getopt.h"
 
 #ifdef __cplusplus
