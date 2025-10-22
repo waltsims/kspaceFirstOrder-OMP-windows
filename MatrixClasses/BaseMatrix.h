@@ -33,6 +33,7 @@
 #define BASE_MATRIX_H
 
 #include <Utils/DimensionSizes.h>
+#include <Utils/MatrixName.h>
 #include <Hdf5/Hdf5File.h>
 
 /**

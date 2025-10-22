@@ -33,6 +33,7 @@
 #define MATRIX_RECORD_H
 
 #include <MatrixClasses/BaseMatrix.h>
+#include <Utils/MatrixName.h>
 
 /**
  * @struct MatrixRecord

@@ -35,6 +35,7 @@
 #include <map>
 
 #include <Containers/MatrixRecord.h>
+#include <Utils/MatrixName.h>
 
 /**
  * @class   MatrixContainer
