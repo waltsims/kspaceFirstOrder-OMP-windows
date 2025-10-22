@@ -22,3 +22,6 @@ jobs:
 
       - name: Build
         run: cmake --build build --parallel
+
+      - name: Build (Makefile)
+        run: make -j"$(nproc)" CC=gcc-12 CXX=g++-12
