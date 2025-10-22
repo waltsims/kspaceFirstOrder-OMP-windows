@@ -36,7 +36,6 @@
 #include <vector>
 
 #include <OutputStreams/BaseOutputStream.h>
-#include <Utils/MatrixName.h>
 
 /**
  * @class   CuboidOutputStream

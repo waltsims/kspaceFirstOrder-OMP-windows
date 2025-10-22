@@ -34,7 +34,6 @@
 
 #include <MatrixClasses/BaseIndexMatrix.h>
 #include <Utils/DimensionSizes.h>
-#include <Utils/MatrixName.h>
 
 /**
  * @class   IndexMatrix

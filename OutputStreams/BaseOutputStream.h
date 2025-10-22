@@ -35,7 +35,6 @@
 #include <MatrixClasses/RealMatrix.h>
 #include <MatrixClasses/IndexMatrix.h>
 #include <Hdf5/Hdf5File.h>
-#include <Utils/MatrixName.h>
 
 /**
  * @class   BaseOutputStream
