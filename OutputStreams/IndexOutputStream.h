@@ -34,6 +34,7 @@
 #define INDEX_OUTPUT_STREAM_H
 
 #include <OutputStreams/BaseOutputStream.h>
+#include <Utils/MatrixName.h>
 
 /**
  * @class   IndexOutputStream

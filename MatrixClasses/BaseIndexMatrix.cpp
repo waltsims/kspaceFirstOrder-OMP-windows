@@ -58,7 +58,7 @@ BaseIndexMatrix::BaseIndexMatrix()
  */
 void BaseIndexMatrix::zeroMatrix()
 {
-  #pragma omp parallel for simd schedule(simd:static)
+  #pragma omp parallel for simd schedule(static)
   for (size_t i = 0; i < mCapacity; i++)
   {
     mData[i] = size_t(0);

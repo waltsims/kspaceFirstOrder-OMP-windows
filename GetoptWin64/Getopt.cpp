@@ -38,7 +38,8 @@ EXPRESSLY ADVISED OF THE POSSIBILITY OF SUCH DAMAGES.
 #define _CRT_SECURE_NO_WARNINGS
 #include <stdlib.h>
 #include <stdio.h>
-#include "getopt.h"
+#include <wchar.h>
+#include "Getopt.h"
 
 #ifdef __cplusplus
 #define _GETOPT_THROW throw()
@@ -186,9 +187,13 @@ static const char *_getopt_initialize_a (const char *optstring, struct _getopt_d
 
 static const wchar_t *_getopt_initialize_w (const wchar_t *optstring, struct _getopt_data_w *d, int posixly_correct)
 {
-	d->__first_nonopt = d->__last_nonopt = d->optind;
-	d->__nextchar = NULL;
-	d->__posixly_correct = posixly_correct | !!_wgetenv(L"POSIXLY_CORRECT");
+        d->__first_nonopt = d->__last_nonopt = d->optind;
+        d->__nextchar = NULL;
+#if defined(_WIN32)
+        d->__posixly_correct = posixly_correct | !!_wgetenv(L"POSIXLY_CORRECT");
+#else
+        d->__posixly_correct = posixly_correct | !!getenv("POSIXLY_CORRECT");
+#endif
 
 
 	if (optstring[0] == L'-')

@@ -38,6 +38,7 @@
 #include <MatrixClasses/RealMatrix.h>
 
 #include <Utils/DimensionSizes.h>
+#include <Utils/MatrixName.h>
 
 /// Datatype for complex single precision numbers.
 using FloatComplex = std::complex<float>;

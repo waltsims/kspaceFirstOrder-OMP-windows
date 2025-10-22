@@ -34,6 +34,7 @@
 
 #include <MatrixClasses/BaseFloatMatrix.h>
 #include <Utils/DimensionSizes.h>
+#include <Utils/MatrixName.h>
 
 // Forward declaration
 class ComplexMatrix;

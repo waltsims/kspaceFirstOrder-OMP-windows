@@ -37,6 +37,7 @@
 #include <Containers/MatrixContainer.h>
 #include <OutputStreams/BaseOutputStream.h>
 #include <Utils/DimensionSizes.h>
+#include <Utils/MatrixName.h>
 
 /**
  * @class   OutputStreamContainer

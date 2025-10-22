@@ -36,6 +36,7 @@
 
 #include <Parameters/CommandLineParameters.h>
 #include <Utils/DimensionSizes.h>
+#include <Utils/MatrixName.h>
 #include <Utils/TimeMeasure.h>
 #include <Hdf5/Hdf5File.h>
 #include <Hdf5/Hdf5FileHeader.h>

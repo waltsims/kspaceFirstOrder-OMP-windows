@@ -173,7 +173,7 @@ void IndexOutputStream::sample()
   {
     case ReduceOperator::kNone:
     {
-      #pragma omp parallel for schedule(simd:static)
+      #pragma omp parallel for schedule(static)
       for (size_t i = 0; i < mBufferSize; i++)
       {
         mStoreBuffer[i] = sourceData[sensorData[i]];
@@ -194,7 +194,7 @@ void IndexOutputStream::sample()
 
     case ReduceOperator::kRms:
     {
-      #pragma omp parallel for schedule(simd:static)
+      #pragma omp parallel for schedule(static)
       for (size_t i = 0; i < mBufferSize; i++)
       {
         mStoreBuffer[i] += (sourceData[sensorData[i]] * sourceData[sensorData[i]]);
@@ -204,7 +204,7 @@ void IndexOutputStream::sample()
 
     case ReduceOperator::kMax:
     {
-      #pragma omp parallel for schedule(simd:static)
+      #pragma omp parallel for schedule(static)
       for (size_t i = 0; i < mBufferSize; i++)
       {
         mStoreBuffer[i] = std::max(mStoreBuffer[i], sourceData[sensorData[i]]);
