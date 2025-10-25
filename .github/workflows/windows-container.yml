@@ -33,16 +33,55 @@ jobs:
           $vcpkgRoot = "$env:USERPROFILE\vcpkg"
           ./Containers/windows/install-deps.ps1 -VcpkgRoot $vcpkgRoot
 
-      - name: Configure and build
+      - name: Configure with CMake
         shell: pwsh
         run: |
           Set-ExecutionPolicy -Scope Process -ExecutionPolicy Bypass -Force
           $env:VCPKG_ROOT = Resolve-Path "$env:USERPROFILE\vcpkg"
-          ./Containers/windows/build.ps1 -BuildDir "$PWD\build\ci" -Config Release
+
+          $vswhere = Join-Path ${env:ProgramFiles(x86)} 'Microsoft Visual Studio/Installer/vswhere.exe'
+          if (-not (Test-Path $vswhere)) {
+            throw "vswhere.exe not found at $vswhere"
+          }
+
+          $installationPath = & $vswhere -latest -requires Microsoft.Component.MSBuild -property installationPath
+          if (-not $installationPath) {
+            throw 'Visual Studio installation not found.'
+          }
+
+          $devCmd = Join-Path $installationPath 'Common7/Tools/VsDevCmd.bat'
+          if (-not (Test-Path $devCmd)) {
+            throw "VsDevCmd.bat not found under $installationPath"
+          }
+
+          cmd /c "`"$devCmd`" -arch=x64 -host_arch=x64 && cmake --preset windows-msvc-vcpkg-release"
+
+      - name: Build with CMake
+        shell: pwsh
+        run: |
+          Set-ExecutionPolicy -Scope Process -ExecutionPolicy Bypass -Force
+          $env:VCPKG_ROOT = Resolve-Path "$env:USERPROFILE\vcpkg"
+
+          $vswhere = Join-Path ${env:ProgramFiles(x86)} 'Microsoft Visual Studio/Installer/vswhere.exe'
+          if (-not (Test-Path $vswhere)) {
+            throw "vswhere.exe not found at $vswhere"
+          }
+
+          $installationPath = & $vswhere -latest -requires Microsoft.Component.MSBuild -property installationPath
+          if (-not $installationPath) {
+            throw 'Visual Studio installation not found.'
+          }
+
+          $devCmd = Join-Path $installationPath 'Common7/Tools/VsDevCmd.bat'
+          if (-not (Test-Path $devCmd)) {
+            throw "VsDevCmd.bat not found under $installationPath"
+          }
+
+          cmd /c "`"$devCmd`" -arch=x64 -host_arch=x64 && cmake --build --preset windows-msvc-vcpkg-release"
 
       - name: Upload Windows build artifacts
         uses: actions/upload-artifact@v4
         with:
           name: windows-release
-          path: build/ci
+          path: build/windows-release
           if-no-files-found: warn

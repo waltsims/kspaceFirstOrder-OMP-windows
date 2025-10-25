@@ -38,4 +38,4 @@ This directory contains helper assets for building **kspaceFirstOrder-OMP** insi
 
 ## Continuous Integration
 
-See [`.github/workflows/windows-container.yml`](../../.github/workflows/windows-container.yml) for an example GitHub Actions job that exercises these scripts on hosted Windows runners.
+See [`.github/workflows/windows-container.yml`](../../.github/workflows/windows-container.yml) for an example GitHub Actions job that installs the dependencies with `install-deps.ps1` and then configures/builds the project using the `windows-msvc-vcpkg-release` CMake preset on hosted Windows runners.
