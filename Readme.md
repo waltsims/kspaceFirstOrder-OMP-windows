@@ -224,3 +224,26 @@ information, please type:
 ```bash
 ./kspaceFirstOrder-OMP --help
 ```
+
+### Building inside a Windows container
+
+The repository ships with helper scripts under [`Containers/windows`](Containers/windows) that streamline building the project with the Microsoft Visual C++ toolchain from inside a Windows Server Core container. The workflow relies on [vcpkg](https://github.com/microsoft/vcpkg) to obtain the required HDF5 and FFTW3 libraries.
+
+1. Build the container image:
+   ```powershell
+   docker build -t kspace-omp-builder -f Containers/windows/Dockerfile .
+   ```
+2. Start the container while mounting the repository:
+   ```powershell
+   docker run --rm -it -v ${PWD}:C:\workspace kspace-omp-builder
+   ```
+3. Run the provisioning and build scripts inside the container:
+   ```powershell
+   Set-Location C:\workspace\Containers\windows
+   .\install-deps.ps1
+   .\build.ps1 -Config Release
+   ```
+
+`build.ps1` honours the `VCPKG_ROOT` environment variable and accepts `-Triplet` and `-Config` arguments for advanced scenarios. Pre-defined [CMake presets](CMakePresets.json) offer equivalent configurations for developers working directly on Windows hosts.
+
+A GitHub Actions workflow (`.github/workflows/windows-container.yml`) demonstrates how to integrate the container-driven build into continuous integration.

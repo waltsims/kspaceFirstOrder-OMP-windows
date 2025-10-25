@@ -1,0 +1,50 @@
+{
+  "$schema": "https://raw.githubusercontent.com/Kitware/CMake/master/Help/manual/cmake-presets.7.json",
+  "version": 6,
+  "cmakeMinimumRequired": {
+    "major": 3,
+    "minor": 20,
+    "patch": 0
+  },
+  "configurePresets": [
+    {
+      "name": "windows-msvc-vcpkg-release",
+      "displayName": "Windows MSVC (vcpkg) Release",
+      "description": "Configure using MSVC, Ninja generator, and vcpkg toolchain.",
+      "generator": "Ninja",
+      "binaryDir": "${sourceDir}/build/windows-release",
+      "cacheVariables": {
+        "CMAKE_BUILD_TYPE": "Release",
+        "CMAKE_C_COMPILER": "cl.exe",
+        "CMAKE_CXX_COMPILER": "cl.exe",
+        "CMAKE_TOOLCHAIN_FILE": "${env.VCPKG_ROOT}/scripts/buildsystems/vcpkg.cmake",
+        "VCPKG_TARGET_TRIPLET": "x64-windows"
+      },
+      "condition": {
+        "type": "equals",
+        "lhs": "${hostSystemName}",
+        "rhs": "Windows"
+      }
+    },
+    {
+      "name": "windows-msvc-vcpkg-debug",
+      "inherits": "windows-msvc-vcpkg-release",
+      "displayName": "Windows MSVC (vcpkg) Debug",
+      "description": "Debug build using MSVC, Ninja, and vcpkg toolchain.",
+      "binaryDir": "${sourceDir}/build/windows-debug",
+      "cacheVariables": {
+        "CMAKE_BUILD_TYPE": "Debug"
+      }
+    }
+  ],
+  "buildPresets": [
+    {
+      "name": "windows-msvc-vcpkg-release",
+      "configurePreset": "windows-msvc-vcpkg-release"
+    },
+    {
+      "name": "windows-msvc-vcpkg-debug",
+      "configurePreset": "windows-msvc-vcpkg-debug"
+    }
+  ]
+}

@@ -1,0 +1,48 @@
+name: Windows container build
+
+on:
+  push:
+    branches: [ main ]
+  pull_request:
+
+jobs:
+  build:
+    runs-on: windows-2022
+    timeout-minutes: 90
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v4
+        with:
+          submodules: recursive
+
+      - name: Enable Git long paths
+        run: git config --system core.longpaths true
+
+      - name: Cache vcpkg
+        uses: actions/cache@v3
+        with:
+          path: C:\\Users\\runneradmin\\vcpkg
+          key: ${{ runner.os }}-vcpkg-${{ hashFiles('CMakeLists.txt') }}
+          restore-keys: |
+            ${{ runner.os }}-vcpkg-
+
+      - name: Install dependencies via vcpkg
+        shell: pwsh
+        run: |
+          Set-ExecutionPolicy -Scope Process -ExecutionPolicy Bypass -Force
+          $vcpkgRoot = "$env:USERPROFILE\vcpkg"
+          ./Containers/windows/install-deps.ps1 -VcpkgRoot $vcpkgRoot
+
+      - name: Configure and build
+        shell: pwsh
+        run: |
+          Set-ExecutionPolicy -Scope Process -ExecutionPolicy Bypass -Force
+          $env:VCPKG_ROOT = Resolve-Path "$env:USERPROFILE\vcpkg"
+          ./Containers/windows/build.ps1 -BuildDir "$PWD\build\ci" -Config Release
+
+      - name: Upload Windows build artifacts
+        uses: actions/upload-artifact@v4
+        with:
+          name: windows-release
+          path: build/ci
+          if-no-files-found: warn
