@@ -30,17 +30,28 @@ jobs:
         run: choco install ninja --no-progress -y
 
       - name: Restore vcpkg and install deps
+        id: vcpkg
         uses: lukka/run-vcpkg@v11
         with:
           vcpkgDirectory: ${{ env.VCPKG_ROOT }}
           vcpkgGitCommitId: 271a5b8850aa50f9a40269cbf3cf414b36e333d6
           appendedCacheKey: ${{ hashFiles('vcpkg.json') }}
 
+      - name: Export resolved vcpkg root
+        shell: pwsh
+        run: |
+          "VCPKG_ROOT=${{ steps.vcpkg.outputs.vcpkgRoot }}" | Out-File -FilePath $env:GITHUB_ENV -Encoding utf8 -Append
+
       - name: Sanity check vcpkg
         shell: cmd
         run: |
           echo VCPKG_ROOT=%VCPKG_ROOT%
           dir %VCPKG_ROOT%
+          dir %VCPKG_ROOT%\scripts\buildsystems
+          if not exist %VCPKG_ROOT%\scripts\buildsystems\vcpkg.cmake (
+            echo Missing vcpkg toolchain file!
+            exit /b 1
+          )
           "%VCPKG_ROOT%\vcpkg.exe" version
           "%VCPKG_ROOT%\vcpkg.exe" list || ver >NUL
 
