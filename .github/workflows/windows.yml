@@ -37,35 +37,51 @@ jobs:
           vcpkgGitCommitId: 271a5b8850aa50f9a40269cbf3cf414b36e333d6
           appendedCacheKey: ${{ hashFiles('vcpkg.json') }}
 
-      - name: Export resolved vcpkg root
+      - name: Resolve vcpkg root
         shell: pwsh
         run: |
-          "VCPKG_ROOT=${{ steps.vcpkg.outputs.vcpkgRoot }}" | Out-File -FilePath $env:GITHUB_ENV -Encoding utf8 -Append
+          $root = "${{ steps.vcpkg.outputs.vcpkgRoot }}"
+          if (-not $root) {
+            Write-Error "run-vcpkg did not expose a vcpkg root."
+            exit 1
+          }
+
+          if (-not (Test-Path -Path $root)) {
+            Write-Error "Resolved vcpkg root '$root' does not exist."
+            exit 1
+          }
+
+          $toolchain = Join-Path $root 'scripts/buildsystems/vcpkg.cmake'
+          if (-not (Test-Path -Path $toolchain)) {
+            Write-Host "Contents of $root:" 
+            Get-ChildItem -Path $root
+            Write-Error "Missing vcpkg toolchain file at $toolchain"
+            exit 1
+          }
+
+          "VCPKG_ROOT=$root" | Out-File -FilePath $env:GITHUB_ENV -Encoding utf8NoBOM -Append
+          Write-Host "Using vcpkg root: $root"
 
       - name: Sanity check vcpkg
-        shell: cmd
+        shell: pwsh
         run: |
-          echo VCPKG_ROOT=%VCPKG_ROOT%
-          dir %VCPKG_ROOT%
-          dir %VCPKG_ROOT%\scripts\buildsystems
-          if not exist %VCPKG_ROOT%\scripts\buildsystems\vcpkg.cmake (
-            echo Missing vcpkg toolchain file!
-            exit /b 1
-          )
-          "%VCPKG_ROOT%\vcpkg.exe" version
-          "%VCPKG_ROOT%\vcpkg.exe" list || ver >NUL
+          Write-Host "VCPKG_ROOT=$env:VCPKG_ROOT"
+          Get-ChildItem $env:VCPKG_ROOT
+          Get-ChildItem (Join-Path $env:VCPKG_ROOT 'scripts/buildsystems')
+          & "$env:VCPKG_ROOT/vcpkg.exe" version
+          & "$env:VCPKG_ROOT/vcpkg.exe" list
 
       - name: Configure (CMake + vcpkg toolchain)
-        shell: cmd
-        run: >
-          cmake -S . -B build -G Ninja
-          -DCMAKE_BUILD_TYPE=Release
-          -DCMAKE_TOOLCHAIN_FILE=%VCPKG_ROOT%\scripts\buildsystems\vcpkg.cmake
-          -DVCPKG_TARGET_TRIPLET=x64-windows
-          -DCMAKE_MSVC_RUNTIME_LIBRARY=MultiThreadedDLL
-          -DUSE_MKL=OFF
-          -DENABLE_OPENMP=ON
-          -DARCH=avx2
+        shell: pwsh
+        run: |
+          cmake -S . -B build -G Ninja `
+            -DCMAKE_BUILD_TYPE=Release `
+            -DCMAKE_TOOLCHAIN_FILE="${env:VCPKG_ROOT}/scripts/buildsystems/vcpkg.cmake" `
+            -DVCPKG_TARGET_TRIPLET=x64-windows `
+            -DCMAKE_MSVC_RUNTIME_LIBRARY=MultiThreadedDLL `
+            -DUSE_MKL=OFF `
+            -DENABLE_OPENMP=ON `
+            -DARCH=avx2
 
       - name: Build
         shell: cmd
