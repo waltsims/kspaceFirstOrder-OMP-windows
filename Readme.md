@@ -52,8 +52,9 @@ be compiled on 64-bit Linux and Windows. 32-bit systems are not supported due to
 the memory requirements even for small simulations.
 
 This section describes the compilation procedure using GNU and Intel compilers
-on Linux. Windows users are encouraged to download the Visual Studio 2017
-project and compile it using the Intel Compiler from within Visual Studio.
+on Linux. Windows users targeting the MSVC toolchain can run
+`pwsh -File scripts/windows-build.ps1` to bootstrap vcpkg and build the
+repository using the same CMake preset as the CI workflow.
 
 Before compiling the code, it is necessary to install a C++ compiler and several
 libraries. The GNU C/C++ compiler is usually part of Linux distributions and
@@ -224,3 +225,4 @@ information, please type:
 ```bash
 ./kspaceFirstOrder-OMP --help
 ```
+

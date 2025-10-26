@@ -299,13 +299,13 @@ all: $(TARGET)
 
 # Link target
 $(TARGET): $(DEPENDENCIES)
-  $(CXX) $(LDFLAGS) $(DEPENDENCIES) $(LDLIBS) -o $@
+	$(CXX) $(LDFLAGS) $(DEPENDENCIES) $(LDLIBS) -o $@
 
 # Compile units
 %.o: %.cpp
-  $(CXX) $(CXXFLAGS) -o $@ -c $<
+	$(CXX) $(CXXFLAGS) -o $@ -c $<
 
 # Clean repository
 .PHONY: clean
 clean:
-  rm -f $(DEPENDENCIES) $(TARGET)
+	rm -f $(DEPENDENCIES) $(TARGET)
