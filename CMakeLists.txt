@@ -1,6 +1,19 @@
 cmake_minimum_required(VERSION 3.22)
 project(kspaceFirstOrder-OMP LANGUAGES CXX)
 
+# Guard against misconfigured Windows CI builds that forget to enable the vcpkg toolchain.
+if(MSVC)
+  if(NOT DEFINED CMAKE_TOOLCHAIN_FILE)
+    message(FATAL_ERROR "vcpkg toolchain not set. Configure with -DCMAKE_TOOLCHAIN_FILE=<vcpkg toolchain>.")
+  endif()
+
+  if(NOT DEFINED VCPKG_TARGET_TRIPLET)
+    message(FATAL_ERROR "VCPKG_TARGET_TRIPLET not defined. Configure with -DVCPKG_TARGET_TRIPLET=x64-windows.")
+  elseif(NOT VCPKG_TARGET_TRIPLET STREQUAL "x64-windows")
+    message(FATAL_ERROR "Unexpected triplet: ${VCPKG_TARGET_TRIPLET}. Expected x64-windows.")
+  endif()
+endif()
+
 # ---------------- Options ----------------
 option(USE_MKL "Use Intel oneMKL instead of FFTW (Linux easiest). On Windows CI we use FFTW." OFF)
 set(ARCH "native" CACHE STRING "CPU arch: native|avx|avx2|avx512")
@@ -26,6 +39,7 @@ set(CMAKE_CXX_STANDARD 11)
 set(CMAKE_CXX_STANDARD_REQUIRED ON)
 
 if(MSVC)
+  set(CMAKE_MSVC_RUNTIME_LIBRARY "MultiThreadedDLL")
   add_compile_options(/permissive- /Zc:__cplusplus)
   add_compile_options(/W4)
 else()
