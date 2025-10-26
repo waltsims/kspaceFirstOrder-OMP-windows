@@ -10,7 +10,7 @@ jobs:
     runs-on: windows-latest
 
     env:
-      VCPKG_ROOT: C:\\vcpkg
+      VCPKG_ROOT: ${{ github.workspace }}\vcpkg
       VCPKG_COMMIT: 271a5b8850aa50f9a40269cbf3cf414b36e333d6
 
     steps:
@@ -28,10 +28,19 @@ jobs:
       - name: Install Ninja
         run: choco install ninja --no-progress -y
 
-      - name: Install vcpkg
-        uses: lukka/run-vcpkg@v11
-        with:
-          vcpkgGitCommitId: ${{ env.VCPKG_COMMIT }}
+      - name: Clone vcpkg
+        shell: cmd
+        run: |
+          if exist "%VCPKG_ROOT%" (
+            echo "vcpkg already cloned at %VCPKG_ROOT%"
+          ) else (
+            git clone https://github.com/microsoft/vcpkg.git "%VCPKG_ROOT%"
+          )
+          pushd "%VCPKG_ROOT%"
+          git fetch --all --tags
+          git checkout %VCPKG_COMMIT%
+          .\bootstrap-vcpkg.bat
+          popd
 
       - name: Cache vcpkg artifacts
         uses: actions/cache@v4
@@ -44,12 +53,18 @@ jobs:
             vcpkg-${{ runner.os }}-${{ env.VCPKG_COMMIT }}-
             vcpkg-${{ runner.os }}-
 
+      - name: Install vcpkg packages
+        shell: cmd
+        run: |
+          "%VCPKG_ROOT%\vcpkg.exe" install hdf5[hl]:x64-windows fftw3[core,threads]:x64-windows
+
       - name: Configure (CMake + vcpkg toolchain)
         run: >
           cmake -S . -B build
           -G "Ninja"
           -DCMAKE_BUILD_TYPE=Release
           -DCMAKE_TOOLCHAIN_FILE=${{ env.VCPKG_ROOT }}\scripts\buildsystems\vcpkg.cmake
+          -DVCPKG_TARGET_TRIPLET=x64-windows
           -DUSE_MKL=OFF
           -DENABLE_OPENMP=ON
           -DARCH=avx2
