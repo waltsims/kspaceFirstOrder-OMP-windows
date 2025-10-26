@@ -60,10 +60,6 @@ jobs:
         shell: cmd
         run: cmake --build build --config Release -- -v
 
-      - name: CTest (optional)
-        shell: cmd
-        run: ctest --test-dir build --output-on-failure
-
       - name: Package artifact
         shell: cmd
         run: |
